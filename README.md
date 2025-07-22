@@ -1,6 +1,7 @@
 # Signal Feed
 
 > Open source financial data interface library
+
 > 开源的金融数据接口库
 
 Signal Feed 是一个面向个人用户的金融数据流与 API 服务，支持 A 股、美股、基金等市场的数据获取，适用于量化研究、投资分析等场景。
