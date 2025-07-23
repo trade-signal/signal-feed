@@ -15,9 +15,9 @@ export class StocksService {
   ) {}
 
   async getLatestAllStocks() {
-    const stocks = await this.eastMoneyStockService.getAllStocks();
+    const { list, total } = await this.eastMoneyStockService.getAllStocks();
 
-    const list = stocks.map(item => {
+    const stocks = list.map(item => {
       return {
         ...item,
         isActive: true,
@@ -26,17 +26,23 @@ export class StocksService {
     });
 
     // 保存到数据库
-    await this.stockRepository.upsert(list, {
+    await this.stockRepository.upsert(stocks, {
       conflictPaths: ['code', 'marketId'],
     });
 
-    return list;
+    return {
+      list: stocks,
+      total,
+    };
   }
 
   async getLatestStocks(page: number = 1, pageSize: number = 100) {
-    const stocks = await this.eastMoneyStockService.getStocks(page, pageSize);
+    const { list, total } = await this.eastMoneyStockService.getStocks(
+      page,
+      pageSize,
+    );
 
-    const list = stocks.map(item => {
+    const stocks = list.map(item => {
       return {
         ...item,
         isActive: true,
@@ -45,21 +51,34 @@ export class StocksService {
     });
 
     // 保存到数据库
-    await this.stockRepository.upsert(list, {
+    await this.stockRepository.upsert(stocks, {
       conflictPaths: ['code', 'marketId'],
     });
 
-    return stocks;
+    return {
+      list: stocks,
+      total,
+    };
   }
 
   async getAllStocks() {
-    return this.stockRepository.findAndCount();
+    const [list, total] = await this.stockRepository.findAndCount();
+
+    return {
+      list,
+      total,
+    };
   }
 
   async getStocks(page: number = 1, pageSize: number = 100) {
-    return this.stockRepository.findAndCount({
+    const [list, total] = await this.stockRepository.findAndCount({
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
+
+    return {
+      list,
+      total,
+    };
   }
 }

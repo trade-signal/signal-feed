@@ -13,14 +13,13 @@ export class StockApi {
   constructor(private readonly httpService: HttpService) {}
 
   protected async get(params: Record<string, any>): Promise<any> {
-    const { data } = await firstValueFrom(
+    const { data: response } = await firstValueFrom(
       this.httpService.get(this.baseUrl, { params }),
     );
 
-    const diff = data?.data?.diff;
-    if (diff) return diff;
+    if (response.data) return response.data;
 
-    throw new Error('Failed to get data from eastmoney');
+    throw new Error(response.errmsg || 'Failed to get data from eastmoney');
   }
 
   protected getIndicatorFields(indicatorMapping: IndicatorMapping) {
@@ -62,6 +61,12 @@ export class StockApi {
     );
   }
 
+  /**
+   * 沪深京个股-基础信息
+   *
+   * 东方财富网-沪深京个股-基础信息
+   * https://quote.eastmoney.com/center/gridlist.html#hs_a_board
+   */
   protected async getStockList({
     fields,
     page,

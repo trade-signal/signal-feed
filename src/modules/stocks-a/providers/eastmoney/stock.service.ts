@@ -6,6 +6,7 @@ import {
   otherIndicators,
   priceIndicators,
 } from './stock.indicators';
+import { delayMilliseconds } from 'src/common/utils/tools';
 
 @Injectable()
 export class EastMoneyStockService extends StockApi {
@@ -22,40 +23,54 @@ export class EastMoneyStockService extends StockApi {
       marketId,
     };
 
-    const data = await this.getStockList({
+    const { diff, total } = await this.getStockList({
       page,
       pageSize,
       fields: this.getIndicatorFields(indicator),
     });
 
-    if (!data || !data.length) {
-      this.logger.error('获取股票列表失败');
-      return [];
+    if (!diff || !diff.length) {
+      return {
+        stocks: [],
+        total: 0,
+      };
     }
 
-    const list = this.transformStockData(data, indicator);
+    const stocks = this.transformStockData(diff, indicator);
 
-    this.logger.log(`获取股票列表成功，共${list.length}条`);
+    this.logger.log(`获取股票列表成功，共${stocks.length}条`);
 
-    return list;
+    return {
+      list: stocks,
+      total,
+    };
   }
 
   async getAllStocks() {
     let page = 1;
     const pageSize = 100;
 
-    const list: any[] = [];
+    const stocks: any[] = [];
 
     while (true) {
-      const stocks = await this.getStocks(page, pageSize);
+      const { list, total } = await this.getStocks(page, pageSize);
 
-      if (!stocks || !stocks.length || stocks.length < pageSize) break;
+      if (!list || !list.length) break;
 
-      list.push(...stocks);
+      stocks.push(...list);
 
       page++;
+
+      this.logger.log(`第${page}页，共${total}条, 已获取${stocks.length}条`);
+
+      if (stocks.length >= total) break;
+
+      await delayMilliseconds(300);
     }
 
-    return list;
+    return {
+      list: stocks,
+      total: stocks.length,
+    };
   }
 }
