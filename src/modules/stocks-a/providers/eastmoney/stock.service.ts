@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { StockApi } from './stock.base';
-import { baseIndicators, otherIndicators } from './stock.indicators';
+import {
+  baseIndicators,
+  otherIndicators,
+  priceIndicators,
+} from './stock.indicators';
 
 @Injectable()
 export class EastMoneyStockService extends StockApi {
@@ -12,6 +16,7 @@ export class EastMoneyStockService extends StockApi {
 
     const indicator = {
       ...baseIndicators,
+      newPrice: priceIndicators.newPrice,
       industry,
       listingDate,
       marketId,

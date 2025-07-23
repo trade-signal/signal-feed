@@ -1,37 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
+import { BaseStockEntity } from 'src/common/entities/base-stock.entity';
 
 @Entity()
-@Index(['code', 'market'], { unique: true })
-@Index(['industry', 'market'])
-export class Stock {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Index(['code', 'marketId'], { unique: true })
+@Index(['industry', 'marketId'])
+export class AStock extends BaseStockEntity {
   @Column()
-  name: string;
-
-  @Column()
-  code: string;
-
-  @Column()
-  market: string;
-
-  @Column()
-  industry: string;
-
-  @Column()
-  listingDate: Date;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  marketId: number;
 }

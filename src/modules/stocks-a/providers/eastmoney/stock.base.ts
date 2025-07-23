@@ -8,21 +8,19 @@ import { arrayToObject } from 'src/common/utils/tools';
 
 @Injectable()
 export class StockApi {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly baseUrl: string,
-  ) {}
+  private readonly baseUrl = 'http://push2.eastmoney.com/api/qt/clist/get';
+
+  constructor(private readonly httpService: HttpService) {}
 
   protected async get(params: Record<string, any>): Promise<any> {
-    const response = await firstValueFrom(
+    const { data } = await firstValueFrom(
       this.httpService.get(this.baseUrl, { params }),
     );
 
-    if (response.data && response.data.diff) {
-      return response.data.diff;
-    }
+    const diff = data?.data?.diff;
+    if (diff) return diff;
 
-    throw new Error('Failed to get quote data');
+    throw new Error('Failed to get data from eastmoney');
   }
 
   protected getIndicatorFields(indicatorMapping: IndicatorMapping) {

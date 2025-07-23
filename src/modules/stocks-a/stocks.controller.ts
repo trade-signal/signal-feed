@@ -6,8 +6,11 @@ export class StocksController {
   constructor(private readonly stocksService: StocksService) {}
 
   @Get('stocks/latest')
-  async getLatestStocks() {
-    return this.stocksService.getLatestStocks();
+  async getLatestStocks(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 100,
+  ) {
+    return this.stocksService.getLatestStocks(page, pageSize);
   }
 
   @Get('stocks/latest/all')
