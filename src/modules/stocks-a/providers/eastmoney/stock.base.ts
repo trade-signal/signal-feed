@@ -26,9 +26,20 @@ export class StockApi {
     return Object.values(indicatorMapping).map((item: any) => item.map);
   }
 
+  protected formatDate(value: string) {
+    if (!value || !/^\d{8}$/.test(value)) return null;
+
+    const rawValue = (value + '').replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+    const date = dayjs(rawValue);
+
+    if (date.isValid()) return date.toDate();
+
+    return null;
+  }
+
   protected normalizeValue(type: IndicatorType, value: string) {
     if (type === IndicatorType.DATE) {
-      return value ? dayjs(value).format('YYYY-MM-DD') : '';
+      return this.formatDate(value);
     }
     if (type === IndicatorType.NUMBER) {
       return Number(value) || 0;

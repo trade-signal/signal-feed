@@ -1,7 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { TransformInterceptor } from 'src/common/interceptors/transform.interceptors';
+
 import { StocksService } from './stocks.service';
 
 @Controller('stocks-a')
+@UseInterceptors(TransformInterceptor)
 export class StocksController {
   constructor(private readonly stocksService: StocksService) {}
 

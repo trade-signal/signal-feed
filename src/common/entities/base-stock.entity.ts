@@ -18,7 +18,7 @@ export abstract class BaseStockEntity {
   @Column()
   industry: string;
 
-  @Column()
+  @Column({ nullable: true })
   listingDate: Date;
 
   @Column()
