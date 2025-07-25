@@ -31,24 +31,18 @@ export class StocksService {
     this.logger.log(`已批量更新 ${stocks.length} 只股票数据`);
   }
 
-  async getLatestAllStocks() {
-    const { list, total } = await this.eastMoneyStockService.getAllStocks();
-
-    const stocks = list.map(item => {
+  private transformStocks(stocks: any[]) {
+    return stocks.map(item => {
       return {
         ...item,
-        isActive: true,
-        isSuspended: item.newPrice === 0,
+        listingDate: item.listingDate
+          ? dayjs(item.listingDate).format('YYYY-MM-DD')
+          : null,
       };
     });
-
-    await this.batchSaveStocks(stocks);
-
-    return {
-      list: stocks,
-      total,
-    };
   }
+
+  // ----------------------------- 股票列表 -----------------------------
 
   async getLatestStocks(page: number = 1, pageSize: number = 100) {
     const { list, total } = await this.eastMoneyStockService.getStocks(
@@ -72,15 +66,44 @@ export class StocksService {
     };
   }
 
-  private transformStocks(stocks: any[]) {
-    return stocks.map(item => {
+  async getLatestAllStocks() {
+    const { list, total } = await this.eastMoneyStockService.getAllStocks();
+
+    const stocks = list.map(item => {
       return {
         ...item,
-        listingDate: item.listingDate
-          ? dayjs(item.listingDate).format('YYYY-MM-DD')
-          : null,
+        isActive: true,
+        isSuspended: item.newPrice === 0,
       };
     });
+
+    await this.batchSaveStocks(stocks);
+
+    return {
+      list: stocks,
+      total,
+    };
+  }
+
+  async getStocks(page: number = 1, pageSize: number = 100) {
+    const [list, total] = await this.stockRepository.findAndCount({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: { code: 'ASC' },
+      select: {
+        name: true,
+        code: true,
+        industry: true,
+        listingDate: true,
+        isActive: true,
+        isSuspended: true,
+      },
+    });
+
+    return {
+      list: this.transformStocks(list),
+      total,
+    };
   }
 
   async getAllStocks() {
@@ -102,20 +125,23 @@ export class StocksService {
     };
   }
 
-  async getStocks(page: number = 1, pageSize: number = 100) {
-    const [list, total] = await this.stockRepository.findAndCount({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: { code: 'ASC' },
-      select: {
-        name: true,
-        code: true,
-        industry: true,
-        listingDate: true,
-        isActive: true,
-        isSuspended: true,
-      },
-    });
+  // ----------------------------- 股票行情 -----------------------------
+
+  async getStockQuotes(page: number = 1, pageSize: number = 100) {
+    const { list, total } = await this.eastMoneyStockService.getStockQuotes(
+      page,
+      pageSize,
+    );
+
+    return {
+      list: this.transformStocks(list),
+      total,
+    };
+  }
+
+  async getAllStockQuotes() {
+    const { list, total } =
+      await this.eastMoneyStockService.getAllStockQuotes();
 
     return {
       list: this.transformStocks(list),

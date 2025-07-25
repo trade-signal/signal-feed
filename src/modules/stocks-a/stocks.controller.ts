@@ -33,4 +33,17 @@ export class StocksController {
   async getAllStocks() {
     return this.stocksService.getAllStocks();
   }
+
+  @Get('stocks/quotes')
+  async getStockQuotes(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 100,
+  ) {
+    return this.stocksService.getStockQuotes(page, pageSize);
+  }
+
+  @Get('stocks/quotes/all')
+  async getAllStockQuotes() {
+    return this.stocksService.getAllStockQuotes();
+  }
 }

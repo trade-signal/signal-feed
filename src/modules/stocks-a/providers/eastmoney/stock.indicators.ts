@@ -12,7 +12,7 @@ export type IndicatorMapping = Record<
 >;
 
 // 基础指标
-export const baseIndicators: IndicatorMapping = {
+export const basicIndicators: IndicatorMapping = {
   code: {
     type: IndicatorType.STRING,
     cn: '代码',
