@@ -28,7 +28,7 @@ export class StocksService {
       });
     }
 
-    this.logger.log(`批量更新 ${stocks.length} 只股票数据`);
+    this.logger.log(`已批量更新 ${stocks.length} 只股票数据`);
   }
 
   async getLatestAllStocks() {
@@ -85,6 +85,7 @@ export class StocksService {
 
   async getAllStocks() {
     const [list, total] = await this.stockRepository.findAndCount({
+      order: { code: 'ASC' },
       select: {
         name: true,
         code: true,
@@ -105,6 +106,7 @@ export class StocksService {
     const [list, total] = await this.stockRepository.findAndCount({
       skip: (page - 1) * pageSize,
       take: pageSize,
+      order: { code: 'ASC' },
       select: {
         name: true,
         code: true,

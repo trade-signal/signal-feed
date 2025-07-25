@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { delayMilliseconds } from 'src/common/utils/tools';
 
 import { StockApi } from './stock.base';
 import {
@@ -6,7 +7,8 @@ import {
   otherIndicators,
   priceIndicators,
 } from './stock.indicators';
-import { delayMilliseconds } from 'src/common/utils/tools';
+
+import { getIndicatorFields, transformStockData } from './stock.utils';
 
 @Injectable()
 export class EastMoneyStockService extends StockApi {
@@ -26,7 +28,7 @@ export class EastMoneyStockService extends StockApi {
     const { diff, total } = await this.getStockList({
       page,
       pageSize,
-      fields: this.getIndicatorFields(indicator),
+      fields: getIndicatorFields(indicator),
     });
 
     if (!diff || !diff.length) {
@@ -36,7 +38,7 @@ export class EastMoneyStockService extends StockApi {
       };
     }
 
-    const stocks = this.transformStockData(diff, indicator);
+    const stocks = transformStockData(diff, indicator);
 
     this.logger.log(`获取股票列表成功，共${stocks.length}条`);
 
