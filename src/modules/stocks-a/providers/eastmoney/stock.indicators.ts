@@ -217,7 +217,7 @@ export const sharesAndCapIndicators = {
     cn: '总市值',
     map: 'f20',
   },
-  freeCap: {
+  freeMarketCap: {
     type: IndicatorType.NUMBER,
     cn: '流通市值',
     map: 'f21',

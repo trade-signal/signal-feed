@@ -203,6 +203,7 @@ export class AStockQuotes {
   @Column({
     type: 'float',
     comment: '流通市值',
+    nullable: true,
   })
   freeMarketCap: number;
 

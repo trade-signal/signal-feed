@@ -1,10 +1,15 @@
-import { Global, Injectable, OnModuleInit } from '@nestjs/common';
+import { Global, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+
+import { isDev } from 'src/common/constants/env.constants';
+import { getRunDate } from 'src/common/utils/date';
 
 import { SinaTradeService } from './providers/sina/sina.trade.service';
 
 @Injectable()
 @Global()
 export class StockTradeService implements OnModuleInit {
+  private readonly logger = new Logger(StockTradeService.name);
+
   constructor(private readonly sinaTradeService: SinaTradeService) {}
 
   private tradeDates: string[] = [];
@@ -14,20 +19,32 @@ export class StockTradeService implements OnModuleInit {
     this.tradeDates = tradeDates;
   }
 
-  async getTradeDates() {
-    return this.tradeDates;
-  }
-
   async refreshTradeDates() {
     this.tradeDates = [];
     await this.initTradeDates();
   }
 
-  async getTradeDate() {
-    return this.tradeDates.at(-1);
+  async getTradeDates() {
+    if (this.tradeDates.length === 0) {
+      await this.initTradeDates();
+    }
+    return this.tradeDates;
+  }
+
+  async getTradeDate(isBeforeClose: boolean = false) {
+    if (this.tradeDates.length === 0) {
+      await this.initTradeDates();
+    }
+    const runDate = getRunDate({ isBeforeClose });
+
+    return this.tradeDates.find(date => date === runDate) || null;
   }
 
   async onModuleInit() {
+    if (isDev) {
+      this.logger.log('开发环境，跳过初始化交易日');
+      return;
+    }
     await this.initTradeDates();
   }
 }

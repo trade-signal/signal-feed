@@ -58,7 +58,7 @@ export class StocksController {
     return this.stockTradeService.getTradeDates();
   }
 
-  @Get('trade-date')
+  @Get('trade-date/latest')
   async getTradeDate() {
     return this.stockTradeService.getTradeDate();
   }

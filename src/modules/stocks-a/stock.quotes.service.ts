@@ -2,8 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { AStock } from './entities/stock.entity';
+import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
+import { StockTradeService } from './stock.trade.service';
 
 @Injectable()
 export class StockQuotesService {
@@ -11,18 +12,29 @@ export class StockQuotesService {
 
   constructor(
     private readonly eastMoneyStockService: EastMoneyStockService,
+    private readonly stockTradeService: StockTradeService,
 
-    @InjectRepository(AStock)
-    private readonly stockRepository: Repository<AStock>,
+    @InjectRepository(AStockQuotes)
+    private readonly stockQuotesRepository: Repository<AStockQuotes>,
   ) {}
 
   private async batchSaveStockQuotes(stockQuotes: any[]) {
     const cloneStockQuotes = [...stockQuotes];
 
+    const tradeDate = await this.stockTradeService.getTradeDate(false);
+
+    if (!tradeDate) {
+      throw new Error('没有找到交易日');
+    }
+
+    cloneStockQuotes.forEach(item => {
+      item.date = tradeDate;
+    });
+
     while (cloneStockQuotes.length > 0) {
       const batch = cloneStockQuotes.splice(0, 1000);
 
-      await this.stockRepository.upsert(batch, {
+      await this.stockQuotesRepository.upsert(batch, {
         conflictPaths: ['code', 'date'],
       });
     }
@@ -36,6 +48,8 @@ export class StockQuotesService {
       pageSize,
     );
 
+    await this.batchSaveStockQuotes(list);
+
     return {
       list,
       total,
@@ -45,6 +59,8 @@ export class StockQuotesService {
   async getLatestAllStockQuotes() {
     const { list, total } =
       await this.eastMoneyStockService.getAllStockQuotes();
+
+    await this.batchSaveStockQuotes(list);
 
     return {
       list,

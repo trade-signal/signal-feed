@@ -1,0 +1,101 @@
+import dayjs from 'dayjs';
+
+interface RunDateConfig {
+  hour?: number;
+  minute?: number;
+  isBeforeClose?: boolean;
+}
+
+// 获取运行日期
+export const getRunDate = ({
+  hour = 16,
+  minute = 0,
+  isBeforeClose = true,
+}: RunDateConfig = {}) => {
+  const now = dayjs();
+  const currentHour = hour || now.hour();
+  const currentMinute = minute || now.minute();
+
+  // 获取最近的工作日
+  const getLastWorkday = (date: dayjs.Dayjs) => {
+    const day = date.day();
+    if (day === 6) return date.subtract(1, 'day'); // 周六 -> 周五
+    if (day === 0) return date.subtract(2, 'day'); // 周日 -> 周五
+    if (day === 1) return date.subtract(3, 'day'); // 周一 -> 周五
+    return date;
+  };
+
+  let baseDate = now;
+
+  if (isBeforeClose) {
+    // 判断是否在收盘数据处理时间之前，默认 16:00 之前
+    const isBeforeClosingTime =
+      currentHour < hour || (currentHour === hour && currentMinute < minute);
+
+    // 获取基准日期：收盘前取前一天，收盘后取当天
+    baseDate = isBeforeClosingTime ? now.subtract(1, 'day') : now;
+  }
+
+  // 返回最近的工作日
+  return getLastWorkday(baseDate).format('YYYY-MM-DD');
+};
+
+// 获取当前时间戳
+export const getCurrentUnixTime = () => dayjs().unix();
+
+// 是否是交易时间
+export const isTradingTime = () => {
+  const now = dayjs();
+  const hour = now.hour();
+  const minute = now.minute();
+
+  // 上午连续交易：9:15 - 11:30
+  const isMorningTrading =
+    (hour === 9 && minute >= 15) || // 9:15 及以后
+    hour === 10 || // 10点整
+    (hour === 11 && minute < 30); // 11:30 之前
+
+  // 下午连续交易：13:00 - 15:00
+  const isAfternoonTrading =
+    (hour >= 13 && hour < 15) || // 13:00 - 14:59
+    (hour === 15 && minute === 0); // 15:00
+
+  return isMorningTrading || isAfternoonTrading;
+};
+
+// 格式化日期
+export const formatDate = (value: string | Date) =>
+  dayjs(value).format('YYYY-MM-DD');
+export const formatDateE = (value: string | Date) =>
+  dayjs(value).format('YYYY-MM-DD HH:mm:ss');
+export const formatDateM = (value: string | Date) =>
+  dayjs(value).format('YYYY-MM-DD HH:mm');
+
+// 格式化日期差
+export const formatDateDiff = (value: string | Date) => {
+  const now = dayjs();
+  const date = dayjs(value);
+  const diffMinutes = now.diff(date, 'minutes');
+  const diffHours = now.diff(date, 'hours');
+  const diffDays = now.diff(date, 'days');
+
+  let relativeTime = '';
+  if (diffDays > 0) {
+    relativeTime = `${diffDays}天前`;
+  } else if (diffHours > 0) {
+    relativeTime = `${diffHours}小时前`;
+  } else if (diffMinutes > 0) {
+    relativeTime = `${diffMinutes}分钟前`;
+  } else {
+    relativeTime = '刚刚';
+  }
+
+  return {
+    relativeTime,
+    date: formatDateE(value),
+  };
+};
+
+export const getCurrentYear = () => dayjs().year();
+export const getCurrentMonth = () => dayjs().month() + 1;
+export const getCurrentDay = () => dayjs().date();

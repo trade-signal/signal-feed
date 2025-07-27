@@ -3,6 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AStock } from './entities/stock.entity';
+import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 import { SinaTradeService } from './providers/sina/sina.trade.service';
 
@@ -12,7 +13,7 @@ import { StockTradeService } from './stock.trade.service';
 import { StockService } from './stock.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AStock]), HttpModule],
+  imports: [TypeOrmModule.forFeature([AStock, AStockQuotes]), HttpModule],
   controllers: [StocksController],
   providers: [
     EastMoneyStockService,
