@@ -26,6 +26,8 @@ export class StockQuotesService {
         conflictPaths: ['code', 'date'],
       });
     }
+
+    this.logger.log(`已批量更新 ${stockQuotes.length} 条股票行情数据`);
   }
 
   async getLatestStockQuotes(page: number = 1, pageSize: number = 100) {

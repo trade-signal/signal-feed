@@ -3,6 +3,7 @@ import { TransformInterceptor } from 'src/common/interceptors/transform.intercep
 
 import { StockService } from './stock.service';
 import { StockQuotesService } from './stock.quotes.service';
+import { StockTradeService } from './stock.trade.service';
 
 @Controller('stocks-a')
 @UseInterceptors(TransformInterceptor)
@@ -10,6 +11,7 @@ export class StocksController {
   constructor(
     private readonly stockService: StockService,
     private readonly stockQuotesService: StockQuotesService,
+    private readonly stockTradeService: StockTradeService,
   ) {}
 
   @Get('stocks/latest')
@@ -49,5 +51,15 @@ export class StocksController {
   @Get('quotes/latest/all')
   async getLatestAllStockQuotes() {
     return this.stockQuotesService.getLatestAllStockQuotes();
+  }
+
+  @Get('trade-dates')
+  async getTradeDates() {
+    return this.stockTradeService.getTradeDates();
+  }
+
+  @Get('trade-date')
+  async getTradeDate() {
+    return this.stockTradeService.getTradeDate();
   }
 }

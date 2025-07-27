@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { delayMilliseconds } from 'src/common/utils/tools';
 
-import { StockApi } from './stock.base';
+import { StockApi } from './stock.api';
 import {
   basicIndicators,
   financialIndicators,
@@ -97,7 +97,7 @@ export class EastMoneyStockService extends StockApi {
       ...sharesAndCapIndicators,
     };
 
-    const { diff, total } = await this.getStockList({
+    const { diff, total } = await this.getStockQuotesList({
       page,
       pageSize,
       fields: getIndicatorFields(indicator),
