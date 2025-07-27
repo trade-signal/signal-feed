@@ -5,9 +5,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export abstract class StockBaseEntity {
-  @PrimaryGeneratedColumn()
-  @Column({ type: 'int', comment: '股票ID' })
+export abstract class BaseStockEntity {
+  @PrimaryGeneratedColumn({
+    type: 'int',
+    comment: '主键ID',
+  })
   id: number;
 
   @Column({
@@ -48,13 +50,13 @@ export abstract class StockBaseEntity {
   isSuspended: boolean;
 
   @CreateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     comment: '创建时间',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     comment: '更新时间',
   })
   updatedAt: Date;

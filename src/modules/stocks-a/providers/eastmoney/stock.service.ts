@@ -95,7 +95,6 @@ export class EastMoneyStockService extends StockApi {
       ...valuationIndicators,
       ...financialIndicators,
       ...sharesAndCapIndicators,
-      ...otherIndicators,
     };
 
     const { diff, total } = await this.getStockList({

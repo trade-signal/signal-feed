@@ -1,24 +1,28 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { TransformInterceptor } from 'src/common/interceptors/transform.interceptors';
 
-import { StocksService } from './stocks.service';
+import { StockService } from './stock.service';
+import { StockQuotesService } from './stock.quotes.service';
 
 @Controller('stocks-a')
 @UseInterceptors(TransformInterceptor)
 export class StocksController {
-  constructor(private readonly stocksService: StocksService) {}
+  constructor(
+    private readonly stockService: StockService,
+    private readonly stockQuotesService: StockQuotesService,
+  ) {}
 
   @Get('stocks/latest')
   async getLatestStocks(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 100,
   ) {
-    return this.stocksService.getLatestStocks(page, pageSize);
+    return this.stockService.getLatestStocks(page, pageSize);
   }
 
   @Get('stocks/latest/all')
   async getLatestAllStocks() {
-    return this.stocksService.getLatestAllStocks();
+    return this.stockService.getLatestAllStocks();
   }
 
   @Get('stocks')
@@ -26,24 +30,24 @@ export class StocksController {
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 100,
   ) {
-    return this.stocksService.getStocks(page, pageSize);
+    return this.stockService.getStocks(page, pageSize);
   }
 
   @Get('stocks/all')
   async getAllStocks() {
-    return this.stocksService.getAllStocks();
+    return this.stockService.getAllStocks();
   }
 
-  @Get('stocks/quotes')
-  async getStockQuotes(
+  @Get('quotes/latest')
+  async getLatestStockQuotes(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 100,
   ) {
-    return this.stocksService.getStockQuotes(page, pageSize);
+    return this.stockQuotesService.getLatestStockQuotes(page, pageSize);
   }
 
-  @Get('stocks/quotes/all')
-  async getAllStockQuotes() {
-    return this.stocksService.getAllStockQuotes();
+  @Get('quotes/latest/all')
+  async getLatestAllStockQuotes() {
+    return this.stockQuotesService.getLatestAllStockQuotes();
   }
 }

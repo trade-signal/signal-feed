@@ -1,10 +1,10 @@
 import { Column, Entity, Index } from 'typeorm';
-import { StockBaseEntity } from 'src/common/entities/stock.base.entity';
+import { BaseStockEntity } from 'src/common/entities/stock.base.entity';
 
 @Entity()
 @Index(['code', 'marketId'], { unique: true })
 @Index(['industry', 'marketId'])
-export class AStock extends StockBaseEntity {
+export class AStock extends BaseStockEntity {
   @Column({
     type: 'int',
     comment: '市场ID',

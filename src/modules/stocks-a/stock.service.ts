@@ -7,8 +7,8 @@ import { AStock } from './entities/stock.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 
 @Injectable()
-export class StocksService {
-  private readonly logger = new Logger(StocksService.name);
+export class StockService {
+  private readonly logger = new Logger(StockService.name);
 
   constructor(
     private readonly eastMoneyStockService: EastMoneyStockService,
@@ -41,8 +41,6 @@ export class StocksService {
       };
     });
   }
-
-  // ----------------------------- 股票列表 -----------------------------
 
   async getLatestStocks(page: number = 1, pageSize: number = 100) {
     const { list, total } = await this.eastMoneyStockService.getStocks(
@@ -118,30 +116,6 @@ export class StocksService {
         isSuspended: true,
       },
     });
-
-    return {
-      list: this.transformStocks(list),
-      total,
-    };
-  }
-
-  // ----------------------------- 股票行情 -----------------------------
-
-  async getStockQuotes(page: number = 1, pageSize: number = 100) {
-    const { list, total } = await this.eastMoneyStockService.getStockQuotes(
-      page,
-      pageSize,
-    );
-
-    return {
-      list: this.transformStocks(list),
-      total,
-    };
-  }
-
-  async getAllStockQuotes() {
-    const { list, total } =
-      await this.eastMoneyStockService.getAllStockQuotes();
 
     return {
       list: this.transformStocks(list),
