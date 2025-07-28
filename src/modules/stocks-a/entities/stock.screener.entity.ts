@@ -38,6 +38,11 @@ export class AStockScreener {
     comment: '股票名称',
   })
   name: string;
+  @Column({
+    type: 'varchar',
+    comment: '股票代码',
+  })
+  secucode: string;
 
   // 交易数据
   @Column({
@@ -100,6 +105,11 @@ export class AStockScreener {
   @Column({
     type: 'varchar',
     comment: '行业',
+  })
+  industry: string;
+  @Column({
+    type: 'varchar',
+    comment: '地区',
   })
   area: string;
   @Column({
@@ -168,6 +178,16 @@ export class AStockScreener {
   predictPeSyear: number;
   @Column({
     type: 'float',
+    comment: '预测市盈率明年',
+  })
+  predictPeNyear: number;
+  @Column({
+    type: 'float',
+    comment: '总市值',
+  })
+  totalMarketCap: number;
+  @Column({
+    type: 'float',
     comment: '流通市值',
   })
   freeCap: number;
@@ -200,6 +220,16 @@ export class AStockScreener {
   bvps: number;
   @Column({
     type: 'float',
+    comment: '每股经营现金流',
+  })
+  perNetcashOperate: number;
+  @Column({
+    type: 'float',
+    comment: '每股自由现金流',
+  })
+  perFcfe: number;
+  @Column({
+    type: 'float',
     comment: '每股资本公积',
   })
   perCapitalReserve: number;
@@ -230,6 +260,10 @@ export class AStockScreener {
     comment: '扣非净利润',
   })
   deductNetprofit: number;
+  @Column({
+    type: 'float',
+    comment: '营业总收入',
+  })
   totalOperateIncome: number;
   @Column({
     type: 'float',
@@ -239,6 +273,11 @@ export class AStockScreener {
   @Column({
     type: 'float',
     comment: '总资产净利率ROA',
+  })
+  roa: number;
+  @Column({
+    type: 'float',
+    comment: '投入资本回报率ROIC',
   })
   roic: number;
   @Column({
@@ -270,6 +309,16 @@ export class AStockScreener {
   deductNetprofitGrowthrate: number;
   @Column({
     type: 'float',
+    comment: '营收增长率',
+  })
+  toiYoyRatio: number;
+  @Column({
+    type: 'float',
+    comment: '净利润3年复合增长率',
+  })
+  netprofitGrowthrate3y: number;
+  @Column({
+    type: 'float',
     comment: '营收3年复合增长率',
   })
   incomeGrowthrate3y: number;
@@ -278,6 +327,11 @@ export class AStockScreener {
     comment: '预测净利润同比增长',
   })
   predictNetprofitRatio: number;
+  @Column({
+    type: 'float',
+    comment: '预测营收同比增长',
+  })
+  predictIncomeRatio: number;
   @Column({
     comment: '每股收益同比增长率',
   })
@@ -303,6 +357,10 @@ export class AStockScreener {
     type: 'float',
     comment: '产权比率',
   })
+  @Column({
+    type: 'float',
+    comment: '权益乘数',
+  })
   equityMultiplier: number;
   @Column({
     type: 'float',
@@ -325,6 +383,12 @@ export class AStockScreener {
     type: 'float',
     comment: '流通股本',
   })
+  freeShares: number;
+  @Column({
+    type: 'int',
+    comment: '最新股东户数',
+  })
+  holderNewest: number;
   @Column({
     type: 'float',
     comment: '股东户数增长率',
@@ -376,17 +440,17 @@ export class AStockScreener {
     type: 'boolean',
     comment: 'KDJ金叉日线',
   })
+  kdjGoldenFork: boolean;
+  @Column({
+    type: 'boolean',
+    comment: 'KDJ金叉周线',
+  })
   kdjGoldenForkz: boolean;
   @Column({
     type: 'boolean',
     comment: 'KDJ金叉月线',
   })
   kdjGoldenForky: boolean;
-  @Column({
-    type: 'boolean',
-    comment: 'KDJ金叉日线',
-  })
-  kdjGoldenFork: boolean;
   @Column({
     type: 'boolean',
     comment: '放量突破',
@@ -414,6 +478,11 @@ export class AStockScreener {
     comment: '向上突破均线10日',
   })
   breakupMa10days: boolean;
+  @Column({
+    type: 'boolean',
+    comment: '向上突破均线20日',
+  })
+  breakupMa20days: boolean;
   @Column({
     type: 'boolean',
     comment: '向上突破均线30日',
@@ -453,6 +522,11 @@ export class AStockScreener {
   oneDayangLine: boolean;
   @Column({
     type: 'boolean',
+    comment: '两根大阳线',
+  })
+  twoDayangLines: boolean;
+  @Column({
+    type: 'boolean',
     comment: '旭日东升',
   })
   riseSun: boolean;
@@ -461,6 +535,15 @@ export class AStockScreener {
     comment: '强势多方炮',
   })
   powerFulgun: boolean;
+  @Column({
+    type: 'boolean',
+    comment: '拨云见日',
+  })
+  restoreJustice: boolean;
+  @Column({
+    type: 'boolean',
+    comment: '七仙女下凡',
+  })
   down7days: boolean;
   @Column({
     type: 'boolean',
@@ -519,10 +602,20 @@ export class AStockScreener {
   })
   allcorpSbNum: number;
   @Column({
+    type: 'int',
+    comment: '信托公司持股家数',
+  })
+  allcorpXtNum: number;
+  @Column({
     type: 'float',
     comment: '机构持股比例合计',
   })
   allcorpRatio: number;
+  @Column({
+    type: 'float',
+    comment: '基金持股比例',
+  })
+  allcorpFundRatio: number;
   @Column({
     type: 'float',
     comment: '券商持股比例',
@@ -558,6 +651,16 @@ export class AStockScreener {
   @Column({
     type: 'float',
     comment: '3日主力净流入',
+  })
+  netinflow3days: number;
+  @Column({
+    type: 'float',
+    comment: '5日主力净流入',
+  })
+  netinflow5days: number;
+  @Column({
+    type: 'float',
+    comment: '当日增仓占比',
   })
   nowinterstRatio: number;
   @Column({
@@ -601,6 +704,16 @@ export class AStockScreener {
     type: 'float',
     comment: '5日涨跌幅',
   })
+  changerate5days: number;
+  @Column({
+    type: 'float',
+    comment: '10日涨跌幅',
+  })
+  changerate10days: number;
+  @Column({
+    type: 'float',
+    comment: '今年以来涨跌幅',
+  })
   changerateTy: number;
   @Column({
     type: 'int',
@@ -624,6 +737,7 @@ export class AStockScreener {
     comment: '沪深股通持股比例',
   })
   holdRatio: number;
+
   // 系统字段
   @CreateDateColumn({
     type: 'timestamp',

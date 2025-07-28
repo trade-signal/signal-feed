@@ -13,15 +13,15 @@ export const getRunDate = ({
   isBeforeClose = true,
 }: RunDateConfig = {}) => {
   const now = dayjs();
-  const currentHour = hour || now.hour();
-  const currentMinute = minute || now.minute();
+
+  const currentHour = now.hour();
+  const currentMinute = now.minute();
 
   // 获取最近的工作日
   const getLastWorkday = (date: dayjs.Dayjs) => {
     const day = date.day();
     if (day === 6) return date.subtract(1, 'day'); // 周六 -> 周五
     if (day === 0) return date.subtract(2, 'day'); // 周日 -> 周五
-    if (day === 1) return date.subtract(3, 'day'); // 周一 -> 周五
     return date;
   };
 

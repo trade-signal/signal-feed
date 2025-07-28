@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 
 import { AStockScreener } from './entities/stock.screener.entity';
 import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.screener.service';
-import { StockTradeService } from './stock.trade.service';
 
 @Injectable()
 export class StockScreenerService {
@@ -12,7 +11,6 @@ export class StockScreenerService {
 
   constructor(
     private readonly eastMoneyStockScreenerService: EastMoneyStockScreenerService,
-    private readonly stockTradeService: StockTradeService,
 
     @InjectRepository(AStockScreener)
     private readonly stockScreenerRepository: Repository<AStockScreener>,

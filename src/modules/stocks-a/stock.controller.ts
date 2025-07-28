@@ -53,6 +53,19 @@ export class StocksController {
     return this.stockQuotesService.getLatestAllStockQuotes();
   }
 
+  @Get('quotes')
+  async getStockQuotes(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 100,
+  ) {
+    return this.stockQuotesService.getStockQuotes(page, pageSize);
+  }
+
+  @Get('quotes/all')
+  async getAllStockQuotes() {
+    return this.stockQuotesService.getAllStockQuotes();
+  }
+
   @Get('trade-dates')
   async getTradeDates() {
     return this.stockTradeService.getTradeDates();

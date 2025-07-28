@@ -31,12 +31,11 @@ export class StockTradeService implements OnModuleInit {
     return this.tradeDates;
   }
 
-  async getTradeDate(isBeforeClose: boolean = false) {
+  async getTradeDate(isBeforeClose: boolean = true) {
     if (this.tradeDates.length === 0) {
       await this.initTradeDates();
     }
     const runDate = getRunDate({ isBeforeClose });
-
     return this.tradeDates.find(date => date === runDate) || null;
   }
 

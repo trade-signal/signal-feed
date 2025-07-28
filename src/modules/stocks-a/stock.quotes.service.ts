@@ -21,7 +21,7 @@ export class StockQuotesService {
   private async batchSaveStockQuotes(stockQuotes: any[]) {
     const cloneStockQuotes = [...stockQuotes];
 
-    const tradeDate = await this.stockTradeService.getTradeDate(false);
+    const tradeDate = await this.stockTradeService.getTradeDate();
 
     if (!tradeDate) {
       throw new Error('没有找到交易日');
@@ -40,6 +40,17 @@ export class StockQuotesService {
     }
 
     this.logger.log(`已批量更新 ${stockQuotes.length} 条股票行情数据`);
+  }
+
+  private transformStockQuotes(stockQuotes: any[]) {
+    const cloneStockQuotes = [...stockQuotes];
+
+    cloneStockQuotes.forEach(item => {
+      delete item.createdAt;
+      delete item.updatedAt;
+    });
+
+    return cloneStockQuotes;
   }
 
   async getLatestStockQuotes(page: number = 1, pageSize: number = 100) {
@@ -64,6 +75,38 @@ export class StockQuotesService {
 
     return {
       list,
+      total,
+    };
+  }
+
+  async getStockQuotes(page: number = 1, pageSize: number = 100) {
+    const maxDate = await this.stockQuotesRepository
+      .createQueryBuilder('stockQuotes')
+      .select('MAX(date)', 'maxDate')
+      .getRawOne();
+
+    const [list, total] = await this.stockQuotesRepository.findAndCount({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: { code: 'ASC' },
+      where: {
+        date: maxDate.maxDate,
+      },
+    });
+
+    return {
+      list: this.transformStockQuotes(list),
+      total,
+    };
+  }
+
+  async getAllStockQuotes() {
+    const [list, total] = await this.stockQuotesRepository.findAndCount({
+      order: { code: 'ASC' },
+    });
+
+    return {
+      list: this.transformStockQuotes(list),
       total,
     };
   }
