@@ -1,8 +1,8 @@
 # Use the official Node.js image as the base image
-FROM registry-vpc.cn-hangzhou.aliyuncs.com/winwin/tool:node-20-slim AS base
+FROM node:20-slim AS base
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
