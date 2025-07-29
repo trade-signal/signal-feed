@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { toDate, formatDate } from 'src/common/utils/date';
+import { toDate, formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 import { StockTradeService } from './stock.trade.service';
@@ -50,14 +50,16 @@ export class StockQuotesService {
     };
   }
 
-  private transformStockQuotes(stockQuotes: any[]) {
-    stockQuotes.forEach(item => {
+  private transformStocks(stockQuotes: any[]) {
+    return stockQuotes.map(item => {
       delete item.id;
-      delete item.createdAt;
-      delete item.updatedAt;
-      item.date = formatDate(item.date);
+      return {
+        ...item,
+        createdAt: formatDateISO(item.createdAt),
+        updatedAt: formatDateISO(item.updatedAt),
+        date: formatDate(item.date),
+      };
     });
-    return stockQuotes;
   }
 
   async getLatestStockQuotes(page: number = 1, pageSize: number = 100) {
@@ -70,7 +72,7 @@ export class StockQuotesService {
 
     return {
       date,
-      list: this.transformStockQuotes(stocks),
+      list: this.transformStocks(stocks),
       total,
     };
   }
@@ -83,7 +85,7 @@ export class StockQuotesService {
 
     return {
       date,
-      list: this.transformStockQuotes(stocks),
+      list: this.transformStocks(stocks),
       total,
     };
   }
@@ -105,7 +107,7 @@ export class StockQuotesService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStockQuotes(list),
+      list: this.transformStocks(list),
       total,
     };
   }
@@ -125,7 +127,7 @@ export class StockQuotesService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStockQuotes(list),
+      list: this.transformStocks(list),
       total,
     };
   }

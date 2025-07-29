@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { formatDate } from 'src/common/utils/date';
+import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStock } from './entities/stock.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 
@@ -35,8 +35,11 @@ export class StockService {
 
   private transformStocks(stocks: any[]) {
     return stocks.map(item => {
+      delete item.id;
       return {
         ...item,
+        createdAt: formatDateISO(item.createdAt),
+        updatedAt: formatDateISO(item.updatedAt),
         listingDate: item.listingDate ? formatDate(item.listingDate) : null,
       };
     });
@@ -59,7 +62,7 @@ export class StockService {
     await this.batchSaveStocks(stocks);
 
     return {
-      list: stocks,
+      list: this.transformStocks(stocks),
       total,
     };
   }
@@ -78,7 +81,7 @@ export class StockService {
     await this.batchSaveStocks(stocks);
 
     return {
-      list: stocks,
+      list: this.transformStocks(stocks),
       total,
     };
   }

@@ -73,6 +73,8 @@ export const formatDateE = (value: string | Date) =>
   dayjs(value).format('YYYY-MM-DD HH:mm:ss');
 export const formatDateM = (value: string | Date) =>
   dayjs(value).format('YYYY-MM-DD HH:mm');
+export const formatDateISO = (value: string | Date) =>
+  dayjs(value).toISOString();
 
 // 格式化日期差
 export const formatDateDiff = (value: string | Date) => {

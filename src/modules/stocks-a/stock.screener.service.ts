@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { toDate, formatDate } from 'src/common/utils/date';
+import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockScreener } from './entities/stock.screener.entity';
 import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.screener.service';
 
@@ -20,15 +20,10 @@ export class StockScreenerService {
   ) {}
 
   private async batchSaveStockScreener(stocks: any[]) {
-    stocks.forEach(item => {
-      item.date = toDate(item.date);
-      item.listingDate = item.listingDate ? toDate(item.listingDate) : null;
-    });
+    const cloneStocks = [...stocks];
 
-    const cloneStockScreener = [...stocks];
-
-    while (cloneStockScreener.length > 0) {
-      const batch = cloneStockScreener.splice(0, this.BATCH_SIZE);
+    while (cloneStocks.length > 0) {
+      const batch = cloneStocks.splice(0, this.BATCH_SIZE);
 
       await this.stockScreenerRepository.upsert(batch, {
         conflictPaths: ['code', 'date'],
@@ -43,15 +38,17 @@ export class StockScreenerService {
     };
   }
 
-  private transformStockScreener(stocks: any[]) {
-    stocks.forEach(item => {
+  private transformStocks(stocks: any[]) {
+    return stocks.map(item => {
       delete item.id;
-      delete item.createdAt;
-      delete item.updatedAt;
-      item.date = formatDate(item.date);
-      item.listingDate = item.listingDate ? formatDate(item.listingDate) : null;
+      return {
+        ...item,
+        createdAt: formatDateISO(item.createdAt),
+        updatedAt: formatDateISO(item.updatedAt),
+        date: formatDate(item.date),
+        listingDate: item.listingDate ? formatDate(item.listingDate) : null,
+      };
     });
-    return stocks;
   }
 
   async getLatestStockScreener(page: number = 1, pageSize: number = 100) {
@@ -65,7 +62,7 @@ export class StockScreenerService {
 
     return {
       date,
-      list: this.transformStockScreener(stocks),
+      list: this.transformStocks(stocks),
       total,
     };
   }
@@ -78,7 +75,7 @@ export class StockScreenerService {
 
     return {
       date,
-      list: this.transformStockScreener(stocks),
+      list: this.transformStocks(stocks),
       total,
     };
   }
@@ -100,7 +97,7 @@ export class StockScreenerService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStockScreener(list),
+      list: this.transformStocks(list),
       total,
     };
   }
@@ -120,7 +117,7 @@ export class StockScreenerService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStockScreener(list),
+      list: this.transformStocks(list),
       total,
     };
   }
