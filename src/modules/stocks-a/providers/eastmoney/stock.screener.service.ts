@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { delayMilliseconds } from 'src/common/utils/tools';
 
 import { StockApi } from './stock.api';
 import { selectionIndicatorMapping } from './stock.screener.indicators';
 import { getIndicatorFields, transformStockData } from './stock.utils';
-import { delayMilliseconds } from 'src/common/utils/tools';
 
 @Injectable()
 export class EastMoneyStockScreenerService extends StockApi {
@@ -11,26 +11,26 @@ export class EastMoneyStockScreenerService extends StockApi {
 
   // 获取选股指标股票列表
   async getScreenerStocks(page: number = 1, pageSize: number = 100) {
-    const { diff, total } = await this.getScreenerStockList({
+    const { data, count } = await this.getScreenerStockList({
       page,
       pageSize,
       fields: getIndicatorFields(selectionIndicatorMapping),
     });
 
-    if (!diff || !diff.length) {
+    if (!data || !data.length) {
       return {
         stocks: [],
         total: 0,
       };
     }
 
-    const stocks = transformStockData(diff, selectionIndicatorMapping);
+    const stocks = transformStockData(data, selectionIndicatorMapping);
 
     this.logger.log(`获取股票列表成功，共${stocks.length}条`);
 
     return {
       list: stocks,
-      total,
+      total: count,
     };
   }
 

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { toDate, formatDate } from 'src/common/utils/date';
 import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 import { StockTradeService } from './stock.trade.service';
@@ -19,17 +20,17 @@ export class StockQuotesService {
   ) {}
 
   private async batchSaveStockQuotes(stockQuotes: any[]) {
-    const cloneStockQuotes = [...stockQuotes];
-
     const tradeDate = await this.stockTradeService.getTradeDate();
 
     if (!tradeDate) {
       throw new Error('没有找到交易日');
     }
 
-    cloneStockQuotes.forEach(item => {
-      item.date = tradeDate;
+    stockQuotes.forEach(item => {
+      item.date = toDate(tradeDate);
     });
+
+    const cloneStockQuotes = [...stockQuotes];
 
     while (cloneStockQuotes.length > 0) {
       const batch = cloneStockQuotes.splice(0, 1000);
@@ -40,17 +41,21 @@ export class StockQuotesService {
     }
 
     this.logger.log(`已批量更新 ${stockQuotes.length} 条股票行情数据`);
+
+    return {
+      date: tradeDate,
+      stocks: stockQuotes,
+    };
   }
 
   private transformStockQuotes(stockQuotes: any[]) {
-    const cloneStockQuotes = [...stockQuotes];
-
-    cloneStockQuotes.forEach(item => {
+    stockQuotes.forEach(item => {
+      delete item.id;
       delete item.createdAt;
       delete item.updatedAt;
+      item.date = formatDate(item.date);
     });
-
-    return cloneStockQuotes;
+    return stockQuotes;
   }
 
   async getLatestStockQuotes(page: number = 1, pageSize: number = 100) {
@@ -59,10 +64,11 @@ export class StockQuotesService {
       pageSize,
     );
 
-    await this.batchSaveStockQuotes(list);
+    const { date, stocks } = await this.batchSaveStockQuotes(list);
 
     return {
-      list,
+      date,
+      list: this.transformStockQuotes(stocks),
       total,
     };
   }
@@ -71,16 +77,17 @@ export class StockQuotesService {
     const { list, total } =
       await this.eastMoneyStockService.getAllStockQuotes();
 
-    await this.batchSaveStockQuotes(list);
+    const { date, stocks } = await this.batchSaveStockQuotes(list);
 
     return {
-      list,
+      date,
+      list: this.transformStockQuotes(stocks),
       total,
     };
   }
 
   async getStockQuotes(page: number = 1, pageSize: number = 100) {
-    const maxDate = await this.stockQuotesRepository
+    const dateRaw = await this.stockQuotesRepository
       .createQueryBuilder('stockQuotes')
       .select('MAX(date)', 'maxDate')
       .getRawOne();
@@ -90,22 +97,32 @@ export class StockQuotesService {
       take: pageSize,
       order: { code: 'ASC' },
       where: {
-        date: maxDate.maxDate,
+        date: dateRaw.maxDate,
       },
     });
 
     return {
+      date: formatDate(dateRaw.maxDate),
       list: this.transformStockQuotes(list),
       total,
     };
   }
 
   async getAllStockQuotes() {
+    const dateRaw = await this.stockQuotesRepository
+      .createQueryBuilder('stockQuotes')
+      .select('MAX(date)', 'maxDate')
+      .getRawOne();
+
     const [list, total] = await this.stockQuotesRepository.findAndCount({
       order: { code: 'ASC' },
+      where: {
+        date: dateRaw.maxDate,
+      },
     });
 
     return {
+      date: formatDate(dateRaw.maxDate),
       list: this.transformStockQuotes(list),
       total,
     };

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import dayjs from 'dayjs';
 
+import { formatDate } from 'src/common/utils/date';
 import { AStock } from './entities/stock.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 
@@ -35,9 +35,7 @@ export class StockService {
     return stocks.map(item => {
       return {
         ...item,
-        listingDate: item.listingDate
-          ? dayjs(item.listingDate).format('YYYY-MM-DD')
-          : null,
+        listingDate: item.listingDate ? formatDate(item.listingDate) : null,
       };
     });
   }

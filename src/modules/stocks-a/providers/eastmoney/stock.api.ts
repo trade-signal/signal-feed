@@ -15,7 +15,10 @@ export class StockApi {
         params,
       }),
     );
+
     if (response.data) return response.data;
+    if (response.result) return response.result;
+
     throw new Error(response.errmsg || 'Failed to get data from eastmoney');
   }
 

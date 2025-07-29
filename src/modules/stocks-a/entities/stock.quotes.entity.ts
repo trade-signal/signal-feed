@@ -20,10 +20,10 @@ export class AStockQuotes {
 
   // 基本信息
   @Column({
-    type: 'varchar',
+    type: 'date',
     comment: '交易日期',
   })
-  date: string;
+  date: Date;
   @Column({
     type: 'varchar',
     comment: '股票代码',

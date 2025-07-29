@@ -63,6 +63,9 @@ export const isTradingTime = () => {
   return isMorningTrading || isAfternoonTrading;
 };
 
+// 转换为日期
+export const toDate = (value: string | Date) => dayjs(value).toDate();
+
 // 格式化日期
 export const formatDate = (value: string | Date) =>
   dayjs(value).format('YYYY-MM-DD');

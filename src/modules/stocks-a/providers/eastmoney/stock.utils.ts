@@ -10,14 +10,22 @@ export const getIndicatorFields = (indicatorMapping: IndicatorMapping) => {
 
 // 格式化日期
 export const formatDate = (value: string) => {
-  if (!value || !/^\d{8}$/.test(value)) return null;
+  try {
+    const date = dayjs(value);
 
-  const rawValue = (value + '').replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
-  const date = dayjs(rawValue);
+    if (date.isValid()) return date.toDate();
 
-  if (date.isValid()) return date.toDate();
+    throw new Error('Invalid date');
+  } catch (error) {
+    if (!value || !/^\d{8}$/.test(value)) return null;
 
-  return null;
+    const rawValue = (value + '').replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+    const date = dayjs(rawValue);
+
+    if (date.isValid()) return date.toDate();
+
+    return null;
+  }
 };
 
 // 格式化指标值

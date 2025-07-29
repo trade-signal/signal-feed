@@ -1,18 +1,30 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { TransformInterceptor } from 'src/common/interceptors/transform.interceptors';
 
+import { StockTradeService } from './stock.trade.service';
 import { StockService } from './stock.service';
 import { StockQuotesService } from './stock.quotes.service';
-import { StockTradeService } from './stock.trade.service';
+import { StockScreenerService } from './stock.screener.service';
 
 @Controller('stocks-a')
 @UseInterceptors(TransformInterceptor)
 export class StocksController {
   constructor(
+    private readonly stockTradeService: StockTradeService,
     private readonly stockService: StockService,
     private readonly stockQuotesService: StockQuotesService,
-    private readonly stockTradeService: StockTradeService,
+    private readonly stockScreenerService: StockScreenerService,
   ) {}
+
+  @Get('trade-dates')
+  async getTradeDates() {
+    return this.stockTradeService.getTradeDates();
+  }
+
+  @Get('trade-date/latest')
+  async getTradeDate() {
+    return this.stockTradeService.getTradeDate();
+  }
 
   @Get('stocks/latest')
   async getLatestStocks(
@@ -66,13 +78,29 @@ export class StocksController {
     return this.stockQuotesService.getAllStockQuotes();
   }
 
-  @Get('trade-dates')
-  async getTradeDates() {
-    return this.stockTradeService.getTradeDates();
+  @Get('screener/latest')
+  async getLatestStockScreener(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 100,
+  ) {
+    return this.stockScreenerService.getLatestStockScreener(page, pageSize);
   }
 
-  @Get('trade-date/latest')
-  async getTradeDate() {
-    return this.stockTradeService.getTradeDate();
+  @Get('screener/latest/all')
+  async getLatestAllStockScreener() {
+    return this.stockScreenerService.getLatestAllStockScreener();
+  }
+
+  @Get('screener')
+  async getStockScreener(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 100,
+  ) {
+    return this.stockScreenerService.getStockScreener(page, pageSize);
+  }
+
+  @Get('screener/all')
+  async getAllStockScreener() {
+    return this.stockScreenerService.getAllStockScreener();
   }
 }

@@ -24,10 +24,10 @@ export class AStockScreener {
 
   // 基本信息
   @Column({
-    type: 'varchar',
+    type: 'date',
     comment: '交易日期',
   })
-  date: string;
+  date: Date;
   @Column({
     type: 'varchar',
     comment: '股票代码',
@@ -98,10 +98,10 @@ export class AStockScreener {
 
   // 公司信息
   @Column({
-    type: 'varchar',
+    type: 'date',
     comment: '上市日期',
   })
-  listingDate: string;
+  listingDate: Date;
   @Column({
     type: 'varchar',
     comment: '行业',
@@ -274,7 +274,7 @@ export class AStockScreener {
     type: 'float',
     comment: '总资产净利率ROA',
   })
-  roa: number;
+  jroa: number;
   @Column({
     type: 'float',
     comment: '投入资本回报率ROIC',
@@ -333,6 +333,7 @@ export class AStockScreener {
   })
   predictIncomeRatio: number;
   @Column({
+    type: 'float',
     comment: '每股收益同比增长率',
   })
   basicepsYoyRatio: number;
@@ -357,6 +358,7 @@ export class AStockScreener {
     type: 'float',
     comment: '产权比率',
   })
+  equityRatio: number;
   @Column({
     type: 'float',
     comment: '权益乘数',
