@@ -1,0 +1,383 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""股票基本信息"""
+type Stock {
+  """股票名称"""
+  name: String!
+
+  """股票代码"""
+  code: String!
+
+  """所属行业"""
+  industry: String!
+
+  """上市日期"""
+  listingDate: DateTime
+
+  """是否活跃"""
+  isActive: Boolean!
+
+  """是否停牌"""
+  isSuspended: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""股票行情数据"""
+type StockQuotes {
+  """交易日期"""
+  date: DateTime!
+
+  """股票代码"""
+  code: String!
+
+  """股票名称"""
+  name: String!
+
+  """最新价"""
+  newPrice: Float!
+
+  """涨跌幅(%)"""
+  changeRate: Float!
+
+  """涨跌额"""
+  upsDowns: Float!
+
+  """成交量"""
+  volume: Float!
+
+  """成交额"""
+  dealAmount: Float!
+
+  """振幅(%)"""
+  amplitude: Float!
+
+  """换手率(%)"""
+  turnoverRate: Float!
+
+  """量比"""
+  volumeRatio: Float!
+
+  """开盘价"""
+  openPrice: Float!
+
+  """最高价"""
+  highPrice: Float!
+
+  """最低价"""
+  lowPrice: Float!
+
+  """昨收价"""
+  preClosePrice: Float!
+
+  """涨速"""
+  speedIncrease: Float!
+
+  """5分钟涨跌"""
+  speedIncrease5: Float!
+
+  """60日涨跌幅(%)"""
+  speedIncrease60: Float!
+
+  """年初至今涨跌幅(%)"""
+  speedIncreaseAll: Float!
+
+  """动态市盈率"""
+  dtsyl: Float!
+
+  """市盈率TTM"""
+  pe: Float!
+
+  """每股收益"""
+  basicEps: Float!
+
+  """每股净资产"""
+  bvps: Float!
+
+  """每股公积金"""
+  perCapitalReserve: Float!
+
+  """每股未分配利润"""
+  perUnassignProfit: Float!
+
+  """加权净资产收益率(%)"""
+  roeWeight: Float!
+
+  """毛利率(%)"""
+  debtAssetRatio: Float!
+
+  """营业总收入"""
+  totalOperateIncome: Float!
+
+  """营业收入同比增长(%)"""
+  toiYoyRatio: Float!
+
+  """归属净利润"""
+  parentNetprofit: Float!
+
+  """归属净利润同比增长(%)"""
+  netprofitYoyRatio: Float!
+
+  """总股本"""
+  totalShares: Float!
+
+  """已流通股份"""
+  freeShares: Float!
+
+  """总市值"""
+  totalMarketCap: Float!
+
+  """流通市值"""
+  freeMarketCap: Float
+}
+
+type StockScreener {
+  date: DateTime!
+  code: String!
+  name: String!
+  secucode: String!
+  newPrice: Float!
+  changeRate: Float!
+  volumeRatio: Float!
+  highPrice: Float!
+  lowPrice: Float!
+  preClosePrice: Float!
+  volume: Float!
+  dealAmount: Float!
+  turnoverRate: Float!
+  amplitude: Float!
+  listingDate: DateTime!
+  industry: String!
+  area: String!
+  concept: String!
+  style: String!
+  isHs300: Boolean!
+  isSz50: Boolean!
+  isZz500: Boolean!
+  isZz1000: Boolean!
+  isCy50: Boolean!
+  pe9: Float!
+  pbnewmrq: Float!
+  pettmdeducted: Float!
+  pcfjyxjl9: Float!
+  ps9: Float!
+  predictPeSyear: Float!
+  predictPeNyear: Float!
+  totalMarketCap: Float!
+  freeCap: Float!
+  dtsyl: Float!
+  ycpeg: Float!
+  enterpriseValueMultiple: Float!
+  basicEps: Float!
+  bvps: Float!
+  perNetcashOperate: Float!
+  perFcfe: Float!
+  perCapitalReserve: Float!
+  perUnassignProfit: Float!
+  perSurplusReserve: Float!
+  perRetainedEarning: Float!
+  parentNetprofit: Float!
+  deductNetprofit: Float!
+  totalOperateIncome: Float!
+  roeWeight: Float!
+  jroa: Float!
+  roic: Float!
+  zxgxl: Float!
+  saleGpr: Float!
+  saleNpr: Float!
+  netprofitYoyRatio: Float!
+  deductNetprofitGrowthrate: Float!
+  toiYoyRatio: Float!
+  netprofitGrowthrate3y: Float!
+  incomeGrowthrate3y: Float!
+  predictNetprofitRatio: Float!
+  predictIncomeRatio: Float!
+  basicepsYoyRatio: Float!
+  totalProfitGrowthrate: Float!
+  operateProfitGrowthrate: Float!
+  debtAssetRatio: Float!
+  equityRatio: Float!
+  equityMultiplier: Float!
+  currentRatio: Float!
+  speedRatio: Float!
+  totalShares: Float!
+  freeShares: Float!
+  avgHoldNum: Float!
+  holderNewest: Int!
+  holderRatio: Float!
+  holdAmount: Float!
+  holdnumGrowthrate3q: Float!
+  holdnumGrowthrateHy: Float!
+  holdRatioCount: Float!
+  freeHoldRatio: Float!
+  macdGoldenFork: Boolean!
+  macdGoldenForkz: Boolean!
+  macdGoldenForky: Boolean!
+  kdjGoldenFork: Boolean!
+  kdjGoldenForkz: Boolean!
+  kdjGoldenForky: Boolean!
+  breakThrough: Boolean!
+  lowFundsInflow: Boolean!
+  highFundsOutflow: Boolean!
+  breakupMa5days: Boolean!
+  breakupMa10days: Boolean!
+  breakupMa20days: Boolean!
+  breakupMa30days: Boolean!
+  breakupMa60days: Boolean!
+  longAvgArray: Boolean!
+  shortAvgArray: Boolean!
+  upperLargeVolume: Boolean!
+  downNarrowVolume: Boolean!
+  oneDayangLine: Boolean!
+  twoDayangLines: Boolean!
+  riseSun: Boolean!
+  powerFulgun: Boolean!
+  restoreJustice: Boolean!
+  down7days: Boolean!
+  upper8days: Boolean!
+  upper9days: Boolean!
+  upper4days: Boolean!
+  heavenRule: Boolean!
+  upsideVolume: Boolean!
+  allcorpNum: Int!
+  allcorpFundNum: Int!
+  allcorpQsNum: Int!
+  allcorpQfiiNum: Int!
+  allcorpBxNum: Int!
+  allcorpSbNum: Int!
+  allcorpXtNum: Int!
+  allcorpRatio: Float!
+  allcorpFundRatio: Float!
+  allcorpQsRatio: Float!
+  allcorpQfiiRatio: Float!
+  allcorpBxRatio: Float!
+  allcorpSbRatio: Float!
+  allcorpXtRatio: Float!
+  netInflow: Float!
+  netinflow3days: Float!
+  netinflow5days: Float!
+  nowinterstRatio: Float!
+  nowinterstRatio3d: Float!
+  nowinterstRatio5d: Float!
+  ddx: Float!
+  ddx3d: Float!
+  ddx5d: Float!
+  ddxRed10d: Int!
+  changerate3days: Float!
+  changerate5days: Float!
+  changerate10days: Float!
+  changerateTy: Float!
+  upnday: Int!
+  downnday: Int!
+  mutualNetbuyAmt: Float!
+  holdRatio: Float!
+}
+
+"""分页股票数据"""
+type PaginatedStocks {
+  """股票列表"""
+  list: [Stock!]!
+
+  """总数量"""
+  total: Int!
+
+  """当前页码"""
+  page: Int!
+
+  """每页数量"""
+  pageSize: Int!
+}
+
+"""分页股票行情数据"""
+type PaginatedStockQuotes {
+  """行情数据列表"""
+  list: [StockQuotes!]!
+
+  """总数量"""
+  total: Int!
+
+  """交易日期"""
+  date: String!
+
+  """当前页码"""
+  page: Int!
+
+  """每页数量"""
+  pageSize: Int!
+}
+
+"""分页股票筛选数据"""
+type PaginatedStockScreener {
+  """筛选数据列表"""
+  list: [StockScreener!]!
+
+  """总数量"""
+  total: Int!
+
+  """交易日期"""
+  date: String!
+
+  """当前页码"""
+  page: Int!
+
+  """每页数量"""
+  pageSize: Int!
+}
+
+type Query {
+  """获取所有交易日"""
+  tradeDates: [String!]!
+
+  """获取最新交易日"""
+  latestTradeDate: String
+
+  """获取股票列表（分页）"""
+  stocks(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStocks!
+
+  """获取所有股票"""
+  allStocks: [Stock!]!
+
+  """获取最新股票数据（分页）"""
+  latestStocks(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStocks!
+
+  """获取所有最新股票数据"""
+  latestAllStocks: [Stock!]!
+
+  """获取股票行情数据（分页）"""
+  stockQuotes(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStockQuotes!
+
+  """获取所有股票行情数据"""
+  allStockQuotes: [StockQuotes!]!
+
+  """获取最新股票行情数据（分页）"""
+  latestStockQuotes(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStockQuotes!
+
+  """获取所有最新股票行情数据"""
+  latestAllStockQuotes: [StockQuotes!]!
+
+  """获取股票筛选数据（分页）"""
+  stockScreener(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStockScreener!
+
+  """获取所有股票筛选数据"""
+  allStockScreener: [StockScreener!]!
+
+  """获取最新股票筛选数据（分页）"""
+  latestStockScreener(pagination: PaginationInput! = {page: 1, pageSize: 100}): PaginatedStockScreener!
+
+  """获取所有最新股票筛选数据"""
+  latestAllStockScreener: [StockScreener!]!
+}
+
+"""分页参数"""
+input PaginationInput {
+  """页码"""
+  page: Int! = 1
+
+  """每页数量"""
+  pageSize: Int! = 100
+}

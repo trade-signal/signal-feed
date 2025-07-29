@@ -14,6 +14,7 @@ import { StockQuotesService } from './stock.quotes.service';
 import { StockTradeService } from './stock.trade.service';
 import { StockService } from './stock.service';
 import { StockScreenerService } from './stock.screener.service';
+import { StockResolver } from './graphql/stock.resolver';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StockScreenerService } from './stock.screener.service';
     StockQuotesService,
     StockTradeService,
     StockScreenerService,
+    StockResolver,
   ],
   exports: [
     StockService,

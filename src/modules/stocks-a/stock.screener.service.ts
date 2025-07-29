@@ -67,6 +67,8 @@ export class StockScreenerService {
       date,
       list: this.transformStockScreener(stocks),
       total,
+      page,
+      pageSize,
     };
   }
 
@@ -102,6 +104,8 @@ export class StockScreenerService {
       date: formatDate(dateRaw.maxDate),
       list: this.transformStockScreener(list),
       total,
+      page,
+      pageSize,
     };
   }
 

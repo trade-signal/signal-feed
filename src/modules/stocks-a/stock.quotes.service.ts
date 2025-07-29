@@ -72,6 +72,8 @@ export class StockQuotesService {
       date,
       list: this.transformStockQuotes(stocks),
       total,
+      page,
+      pageSize,
     };
   }
 
@@ -107,6 +109,8 @@ export class StockQuotesService {
       date: formatDate(dateRaw.maxDate),
       list: this.transformStockQuotes(list),
       total,
+      page,
+      pageSize,
     };
   }
 

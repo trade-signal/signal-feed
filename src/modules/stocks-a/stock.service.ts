@@ -61,6 +61,8 @@ export class StockService {
     return {
       list: stocks,
       total,
+      page,
+      pageSize,
     };
   }
 
@@ -101,6 +103,8 @@ export class StockService {
     return {
       list: this.transformStocks(list),
       total,
+      page,
+      pageSize,
     };
   }
 
