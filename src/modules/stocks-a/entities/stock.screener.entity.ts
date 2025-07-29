@@ -40,7 +40,7 @@ export class AStockScreener {
   name: string;
   @Column({
     type: 'varchar',
-    comment: '股票代码',
+    comment: '全代码',
   })
   secucode: string;
 
@@ -171,6 +171,11 @@ export class AStockScreener {
     comment: '市现率TTM',
   })
   pcfjyxjl9: number;
+  @Column({
+    type: 'float',
+    comment: '市销率TTM',
+  })
+  ps9: number;
   @Column({
     type: 'float',
     comment: '预测市盈率今年',
@@ -387,6 +392,11 @@ export class AStockScreener {
   })
   freeShares: number;
   @Column({
+    type: 'float',
+    comment: '户均持股数量',
+  })
+  avgHoldNum: number;
+  @Column({
     type: 'int',
     comment: '最新股东户数',
   })
@@ -583,6 +593,7 @@ export class AStockScreener {
     type: 'int',
     comment: '基金持股家数',
   })
+  allcorpFundNum: number;
   @Column({
     type: 'int',
     comment: '券商持股家数',

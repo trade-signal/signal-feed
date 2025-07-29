@@ -9,6 +9,8 @@ import { StockTradeService } from './stock.trade.service';
 
 @Injectable()
 export class StockQuotesService {
+  private readonly BATCH_SIZE = 1000;
+
   private readonly logger = new Logger(StockQuotesService.name);
 
   constructor(
@@ -33,7 +35,7 @@ export class StockQuotesService {
     const cloneStockQuotes = [...stockQuotes];
 
     while (cloneStockQuotes.length > 0) {
-      const batch = cloneStockQuotes.splice(0, 1000);
+      const batch = cloneStockQuotes.splice(0, this.BATCH_SIZE);
 
       await this.stockQuotesRepository.upsert(batch, {
         conflictPaths: ['code', 'date'],

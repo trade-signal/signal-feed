@@ -34,13 +34,14 @@ export const normalizeValue = (type: IndicatorType, value: string) => {
     return formatDate(value);
   }
   if (type === IndicatorType.NUMBER) {
-    return Number(value) || 0;
+    const numValue = Number(value);
+    return isNaN(numValue) ? 0 : numValue;
   }
   if (type === IndicatorType.BOOLEAN) {
     return value === '1';
   }
   if (type === IndicatorType.ARRAY) {
-    return Array.isArray(value) ? value.join(',') : value;
+    return Array.isArray(value) ? value.join(',') : value || '';
   }
   return value || '';
 };

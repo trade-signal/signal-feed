@@ -8,6 +8,8 @@ import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.scree
 
 @Injectable()
 export class StockScreenerService {
+  private readonly BATCH_SIZE = 200;
+
   private readonly logger = new Logger(StockScreenerService.name);
 
   constructor(
@@ -26,7 +28,7 @@ export class StockScreenerService {
     const cloneStockScreener = [...stocks];
 
     while (cloneStockScreener.length > 0) {
-      const batch = cloneStockScreener.splice(0, 1000);
+      const batch = cloneStockScreener.splice(0, this.BATCH_SIZE);
 
       await this.stockScreenerRepository.upsert(batch, {
         conflictPaths: ['code', 'date'],

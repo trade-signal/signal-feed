@@ -8,6 +8,8 @@ import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 
 @Injectable()
 export class StockService {
+  private readonly BATCH_SIZE = 1000;
+
   private readonly logger = new Logger(StockService.name);
 
   constructor(
@@ -21,7 +23,7 @@ export class StockService {
     const cloneStocks = [...stocks];
 
     while (cloneStocks.length > 0) {
-      const batch = cloneStocks.splice(0, 1000);
+      const batch = cloneStocks.splice(0, this.BATCH_SIZE);
 
       await this.stockRepository.upsert(batch, {
         conflictPaths: ['code', 'marketId'],

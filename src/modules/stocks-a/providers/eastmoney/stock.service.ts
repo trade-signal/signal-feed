@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { delayMilliseconds } from 'src/common/utils/tools';
 
 import { StockApi } from './stock.api';
 import {
@@ -74,8 +73,6 @@ export class EastMoneyStockService extends StockApi {
       this.logger.log(`第${page}页，共${total}条, 已获取${stocks.length}条`);
 
       if (stocks.length >= total) break;
-
-      await delayMilliseconds(300);
     }
 
     return {
@@ -139,8 +136,6 @@ export class EastMoneyStockService extends StockApi {
       this.logger.log(`第${page}页，共${total}条, 已获取${stocks.length}条`);
 
       if (stocks.length >= total) break;
-
-      await delayMilliseconds(300);
     }
 
     return {
