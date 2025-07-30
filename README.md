@@ -18,7 +18,7 @@ Signal Feed 是一个面向个人用户的金融数据流与 API 服务，支持
 
 ### 1. 环境准备
 
-- 复制 `.env.example` 为 `.env`，并根据实际情况填写数据库等配置信息。
+复制 `.env.example` 为 `.env`，并根据实际情况填写数据库等配置信息。
 
 ### 2. 启动依赖服务（PostgreSQL、Redis）
 
@@ -35,19 +35,25 @@ pnpm start:dev
 
 ## 生产环境部署
 
-#### 方式一：本地构建并启动
+#### 本地构建并启动
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-#### 方式二：Docker Compose 部署
+#### Docker 部署
+
+```bash
+docker-compose -f docker-compose.yml build
+```
+
+复制 `.env.example` 为 `.env.production.local`，并根据实际情况填写数据库等配置信息。
 
 ```bash
 docker-compose \
-  -p signal-feed \
-  --env-file .env.production \
-  -f docker/docker-compose.prod.yml \
+  -p signal-feed-prod \
+  -f docker-compose.yml \
+  --env-file .env.production.local \
   up -d
 ```

@@ -8,11 +8,13 @@ export const postgresConfig = {
   password: process.env.POSTGRES_PASSWORD || '123456',
   database: process.env.POSTGRES_DB || 'postgres',
   autoLoadEntities: true,
-  synchronize: isDev ? true : false,
+  synchronize: true,
+  alter: isDev ? true : false,
 };
 
 export const redisConfig = {
   prefix: process.env.REDIS_PREFIX || 'signal-feed',
   host: process.env.REDIS_HOST || 'localhost',
   port: Number(process.env.REDIS_PORT) || 6379,
+  password: process.env.REDIS_PASSWORD || '',
 };
