@@ -6,6 +6,7 @@ import { toDate, formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 import { StockTradeService } from './stock.trade.service';
+import type { StockQuotesQuery } from './interfaces/stock.query';
 
 @Injectable()
 export class StockQuotesService {
@@ -22,7 +23,7 @@ export class StockQuotesService {
   ) {}
 
   private async batchSaveStockQuotes(stockQuotes: any[]) {
-    const tradeDate = await this.stockTradeService.getTradeDate();
+    const tradeDate = await this.stockTradeService.getLatestTradeDate();
 
     if (!tradeDate) {
       throw new Error('没有找到交易日');
@@ -90,7 +91,9 @@ export class StockQuotesService {
     };
   }
 
-  async getStockQuotes(page: number = 1, pageSize: number = 100) {
+  async getStockQuotes(query: StockQuotesQuery) {
+    const { page, pageSize } = query;
+
     const dateRaw = await this.stockQuotesRepository
       .createQueryBuilder('stockQuotes')
       .select('MAX(date)', 'maxDate')
@@ -99,26 +102,6 @@ export class StockQuotesService {
     const [list, total] = await this.stockQuotesRepository.findAndCount({
       skip: (page - 1) * pageSize,
       take: pageSize,
-      order: { code: 'ASC' },
-      where: {
-        date: dateRaw.maxDate,
-      },
-    });
-
-    return {
-      date: formatDate(dateRaw.maxDate),
-      list: this.transformStocks(list),
-      total,
-    };
-  }
-
-  async getAllStockQuotes() {
-    const dateRaw = await this.stockQuotesRepository
-      .createQueryBuilder('stockQuotes')
-      .select('MAX(date)', 'maxDate')
-      .getRawOne();
-
-    const [list, total] = await this.stockQuotesRepository.findAndCount({
       order: { code: 'ASC' },
       where: {
         date: dateRaw.maxDate,

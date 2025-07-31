@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockScreener } from './entities/stock.screener.entity';
 import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.screener.service';
+import type { StockScreenerQuery } from './interfaces/stock.query';
 
 @Injectable()
 export class StockScreenerService {
@@ -80,7 +81,9 @@ export class StockScreenerService {
     };
   }
 
-  async getStockScreener(page: number = 1, pageSize: number = 100) {
+  async getStockScreener(query: StockScreenerQuery) {
+    const { page, pageSize } = query;
+
     const dateRaw = await this.stockScreenerRepository
       .createQueryBuilder('stockScreener')
       .select('MAX(date)', 'maxDate')
@@ -90,26 +93,6 @@ export class StockScreenerService {
       order: { code: 'ASC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where: {
-        date: dateRaw.maxDate,
-      },
-    });
-
-    return {
-      date: formatDate(dateRaw.maxDate),
-      list: this.transformStocks(list),
-      total,
-    };
-  }
-
-  async getAllStockScreener() {
-    const dateRaw = await this.stockScreenerRepository
-      .createQueryBuilder('stockScreener')
-      .select('MAX(date)', 'maxDate')
-      .getRawOne();
-
-    const [list, total] = await this.stockScreenerRepository.findAndCount({
-      order: { code: 'ASC' },
       where: {
         date: dateRaw.maxDate,
       },

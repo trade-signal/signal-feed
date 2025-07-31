@@ -31,7 +31,7 @@ export class StockTradeService implements OnModuleInit {
     return this.tradeDates;
   }
 
-  async getTradeDate(isBeforeClose: boolean = true) {
+  async getLatestTradeDate(isBeforeClose: boolean = true) {
     if (this.tradeDates.length === 0) {
       await this.initTradeDates();
     }

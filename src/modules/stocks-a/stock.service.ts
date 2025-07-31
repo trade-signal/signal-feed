@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStock } from './entities/stock.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
+import type { StockQuery } from './interfaces/stock.query';
 
 @Injectable()
 export class StockService {
@@ -86,10 +87,12 @@ export class StockService {
     };
   }
 
-  async getStocks(page: number = 1, pageSize: number = 100) {
+  async getStocks(query: StockQuery) {
+    const { page, pageSize } = query;
+
     const [list, total] = await this.stockRepository.findAndCount({
       skip: (page - 1) * pageSize,
-      take: pageSize,
+      take: pageSize || 100,
       order: { code: 'ASC' },
       select: {
         name: true,
@@ -107,22 +110,15 @@ export class StockService {
     };
   }
 
-  async getAllStocks() {
-    const [list, total] = await this.stockRepository.findAndCount({
-      order: { code: 'ASC' },
-      select: {
-        name: true,
-        code: true,
-        industry: true,
-        listingDate: true,
-        isActive: true,
-        isSuspended: true,
-      },
+  async getStock(code: string) {
+    const stock = await this.stockRepository.findOne({
+      where: { code },
     });
 
-    return {
-      list: this.transformStocks(list),
-      total,
-    };
+    if (!stock) {
+      throw new Error(`股票 ${code} 不存在`);
+    }
+
+    return this.transformStocks([stock]);
   }
 }
