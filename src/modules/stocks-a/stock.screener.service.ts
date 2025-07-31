@@ -20,7 +20,7 @@ export class StockScreenerService {
     private readonly stockScreenerRepository: Repository<AStockScreener>,
   ) {}
 
-  private async batchSaveStockScreener(stocks: any[]) {
+  private async batchSaveData(stocks: any[]) {
     const cloneStocks = [...stocks];
 
     while (cloneStocks.length > 0) {
@@ -39,7 +39,7 @@ export class StockScreenerService {
     };
   }
 
-  private transformStocks(stocks: any[]) {
+  private transformData(stocks: any[]) {
     return stocks.map(item => {
       delete item.id;
       return {
@@ -52,31 +52,20 @@ export class StockScreenerService {
     });
   }
 
-  async getLatestStockScreener(page: number = 1, pageSize: number = 100) {
-    const { list, total } =
-      await this.eastMoneyStockScreenerService.getScreenerStocks(
-        page,
-        pageSize,
-      );
-
-    const { date, stocks } = await this.batchSaveStockScreener(list);
-
-    return {
-      date,
-      list: this.transformStocks(stocks),
-      total,
-    };
+  async checkExist() {
+    const total = await this.stockScreenerRepository.count();
+    return total > 0;
   }
 
-  async getLatestAllStockScreener() {
+  async fetchAll() {
     const { list, total } =
       await this.eastMoneyStockScreenerService.getAllScreenerStocks();
 
-    const { date, stocks } = await this.batchSaveStockScreener(list);
+    const { date, stocks } = await this.batchSaveData(list);
 
     return {
       date,
-      list: this.transformStocks(stocks),
+      list: this.transformData(stocks),
       total,
     };
   }
@@ -100,8 +89,28 @@ export class StockScreenerService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStocks(list),
+      list: this.transformData(list),
       total,
+    };
+  }
+
+  async getStockScreenerByCode(code: string) {
+    const dateRaw = await this.stockScreenerRepository
+      .createQueryBuilder('stockScreener')
+      .select('MAX(date)', 'maxDate')
+      .getRawOne();
+
+    const stockScreener = await this.stockScreenerRepository.findOne({
+      where: { code, date: dateRaw.maxDate },
+    });
+
+    if (!stockScreener) {
+      throw new Error(`股票筛选器 ${code} 不存在`);
+    }
+
+    return {
+      date: formatDate(dateRaw.maxDate),
+      data: this.transformData([stockScreener])[0],
     };
   }
 }

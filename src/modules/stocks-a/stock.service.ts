@@ -20,7 +20,7 @@ export class StockService {
     private readonly stockRepository: Repository<AStock>,
   ) {}
 
-  private async batchSaveStocks(stocks: any[]) {
+  private async batchSaveData(stocks: any[]) {
     const cloneStocks = [...stocks];
 
     while (cloneStocks.length > 0) {
@@ -34,7 +34,7 @@ export class StockService {
     this.logger.log(`已批量更新 ${stocks.length} 只股票数据`);
   }
 
-  private transformStocks(stocks: any[]) {
+  private transformData(stocks: any[]) {
     return stocks.map(item => {
       delete item.id;
       return {
@@ -46,29 +46,12 @@ export class StockService {
     });
   }
 
-  async getLatestStocks(page: number = 1, pageSize: number = 100) {
-    const { list, total } = await this.eastMoneyStockService.getStocks(
-      page,
-      pageSize,
-    );
-
-    const stocks = list.map(item => {
-      return {
-        ...item,
-        isActive: true,
-        isSuspended: item.newPrice === 0,
-      };
-    });
-
-    await this.batchSaveStocks(stocks);
-
-    return {
-      list: this.transformStocks(stocks),
-      total,
-    };
+  async checkExist() {
+    const total = await this.stockRepository.count();
+    return total > 0;
   }
 
-  async getLatestAllStocks() {
+  async fetchAll() {
     const { list, total } = await this.eastMoneyStockService.getAllStocks();
 
     const stocks = list.map(item => {
@@ -79,10 +62,10 @@ export class StockService {
       };
     });
 
-    await this.batchSaveStocks(stocks);
+    await this.batchSaveData(stocks);
 
     return {
-      list: this.transformStocks(stocks),
+      list: this.transformData(stocks),
       total,
     };
   }
@@ -105,12 +88,12 @@ export class StockService {
     });
 
     return {
-      list: this.transformStocks(list),
+      list: this.transformData(list),
       total,
     };
   }
 
-  async getStock(code: string) {
+  async getStockByCode(code: string) {
     const stock = await this.stockRepository.findOne({
       where: { code },
     });
@@ -119,6 +102,6 @@ export class StockService {
       throw new Error(`股票 ${code} 不存在`);
     }
 
-    return this.transformStocks([stock]);
+    return this.transformData([stock]);
   }
 }

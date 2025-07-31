@@ -33,12 +33,17 @@ export class StocksController {
 
   @Get('stocks/:code')
   async getStock(@Param('code') code: string) {
-    return this.stockService.getStock(code);
+    return this.stockService.getStockByCode(code);
   }
 
   @Get('quotes')
   async getStockQuotes(@Query() query: StockQuotesQuery) {
     return this.stockQuotesService.getStockQuotes(query);
+  }
+
+  @Get('quotes/:code')
+  async getStockQuotesByCode(@Param('code') code: string) {
+    return this.stockQuotesService.getStockQuotesByCode(code);
   }
 
   @Get('screener')

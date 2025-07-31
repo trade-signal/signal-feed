@@ -22,7 +22,7 @@ export class StockQuotesService {
     private readonly stockQuotesRepository: Repository<AStockQuotes>,
   ) {}
 
-  private async batchSaveStockQuotes(stockQuotes: any[]) {
+  protected async batchSaveData(stockQuotes: any[]) {
     const tradeDate = await this.stockTradeService.getLatestTradeDate();
 
     if (!tradeDate) {
@@ -51,7 +51,7 @@ export class StockQuotesService {
     };
   }
 
-  private transformStocks(stockQuotes: any[]) {
+  protected transformData(stockQuotes: any[]) {
     return stockQuotes.map(item => {
       delete item.id;
       return {
@@ -63,30 +63,20 @@ export class StockQuotesService {
     });
   }
 
-  async getLatestStockQuotes(page: number = 1, pageSize: number = 100) {
-    const { list, total } = await this.eastMoneyStockService.getStockQuotes(
-      page,
-      pageSize,
-    );
-
-    const { date, stocks } = await this.batchSaveStockQuotes(list);
-
-    return {
-      date,
-      list: this.transformStocks(stocks),
-      total,
-    };
+  async checkExist() {
+    const total = await this.stockQuotesRepository.count();
+    return total > 0;
   }
 
-  async getLatestAllStockQuotes() {
+  async fetchAll() {
     const { list, total } =
       await this.eastMoneyStockService.getAllStockQuotes();
 
-    const { date, stocks } = await this.batchSaveStockQuotes(list);
+    const { date, stocks } = await this.batchSaveData(list);
 
     return {
       date,
-      list: this.transformStocks(stocks),
+      list: this.transformData(stocks),
       total,
     };
   }
@@ -110,8 +100,28 @@ export class StockQuotesService {
 
     return {
       date: formatDate(dateRaw.maxDate),
-      list: this.transformStocks(list),
+      list: this.transformData(list),
       total,
+    };
+  }
+
+  async getStockQuotesByCode(code: string) {
+    const dateRaw = await this.stockQuotesRepository
+      .createQueryBuilder('stockQuotes')
+      .select('MAX(date)', 'maxDate')
+      .getRawOne();
+
+    const stockQuotes = await this.stockQuotesRepository.findOne({
+      where: { code, date: dateRaw.maxDate },
+    });
+
+    if (!stockQuotes) {
+      throw new Error(`股票行情 ${code} 不存在`);
+    }
+
+    return {
+      date: formatDate(dateRaw.maxDate),
+      data: this.transformData([stockQuotes])[0],
     };
   }
 }
