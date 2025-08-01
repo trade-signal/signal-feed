@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsSelect, Repository } from 'typeorm';
 
 import { toDate, formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockQuotes } from './entities/stock.quotes.entity';
@@ -22,7 +22,7 @@ export class StockQuotesService {
     private readonly stockQuotesRepository: Repository<AStockQuotes>,
   ) {}
 
-  protected async batchSaveData(stockQuotes: any[]) {
+  protected async saveData(stockQuotes: any[]) {
     const tradeDate = await this.stockTradeService.getLatestTradeDate();
 
     if (!tradeDate) {
@@ -51,8 +51,9 @@ export class StockQuotesService {
     };
   }
 
-  protected transformData(stockQuotes: any[]) {
-    return stockQuotes.map(item => {
+  protected transformData(list: AStockQuotes[] | AStockQuotes) {
+    const stocks = Array.isArray(list) ? list : [list];
+    return stocks.map(item => {
       delete item.id;
       return {
         ...item,
@@ -72,7 +73,7 @@ export class StockQuotesService {
     const { list, total } =
       await this.eastMoneyStockService.getAllStockQuotes();
 
-    const { date, stocks } = await this.batchSaveData(list);
+    const { date, stocks } = await this.saveData(list);
 
     return {
       date,
@@ -84,22 +85,38 @@ export class StockQuotesService {
   async getStockQuotes(query: StockQuotesQuery) {
     const { page, pageSize } = query;
 
-    const dateRaw = await this.stockQuotesRepository
-      .createQueryBuilder('stockQuotes')
-      .select('MAX(date)', 'maxDate')
-      .getRawOne();
+    let date: Date | undefined;
 
-    const [list, total] = await this.stockQuotesRepository.findAndCount({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
+    if (query.date) {
+      date = toDate(query.date);
+    } else {
+      const dateRaw = await this.stockQuotesRepository
+        .createQueryBuilder('stockQuotes')
+        .select('MAX(date)', 'maxDate')
+        .getRawOne();
+      date = dateRaw.maxDate;
+    }
+
+    const where: FindManyOptions<AStockQuotes> = {
+      where: { date },
       order: { code: 'ASC' },
-      where: {
-        date: dateRaw.maxDate,
-      },
-    });
+    };
+
+    if (query.page && query.pageSize) {
+      where.skip = (page - 1) * pageSize;
+      where.take = pageSize;
+    }
+    if (query.sortBy && query.sortOrder) {
+      where.order = { [query.sortBy]: query.sortOrder };
+    }
+    if (query.fields) {
+      where.select = query.fields as FindOptionsSelect<AStockQuotes>;
+    }
+
+    const [list, total] = await this.stockQuotesRepository.findAndCount(where);
 
     return {
-      date: formatDate(dateRaw.maxDate),
+      date: formatDate(date),
       list: this.transformData(list),
       total,
     };
@@ -111,17 +128,17 @@ export class StockQuotesService {
       .select('MAX(date)', 'maxDate')
       .getRawOne();
 
-    const stockQuotes = await this.stockQuotesRepository.findOne({
+    const stock = await this.stockQuotesRepository.findOne({
       where: { code, date: dateRaw.maxDate },
     });
 
-    if (!stockQuotes) {
+    if (!stock) {
       throw new Error(`股票行情 ${code} 不存在`);
     }
 
     return {
       date: formatDate(dateRaw.maxDate),
-      data: this.transformData([stockQuotes])[0],
+      data: this.transformData(stock),
     };
   }
 }

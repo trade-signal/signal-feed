@@ -27,11 +27,15 @@ export class DataInitializationService implements OnModuleInit {
   }
 
   private async initialize() {
-    // 获取所有股票
-    await this.stockService.fetchAll();
-    // 获取所有股票的行情
-    await this.stockQuotesService.fetchAll();
-    // 获取所有股票的筛选器
-    await this.stockScreenerService.fetchAll();
+    try {
+      // 获取所有股票
+      await this.stockService.fetchAll();
+      // 获取所有股票的行情
+      // await this.stockQuotesService.fetchAll();
+      // 获取所有股票的筛选器
+      // await this.stockScreenerService.fetchAll();
+    } catch (error) {
+      this.logger.error(`数据初始化失败: ${error.message}`);
+    }
   }
 }

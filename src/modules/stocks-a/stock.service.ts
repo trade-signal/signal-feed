@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsSelect, Repository } from 'typeorm';
 
 import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStock } from './entities/stock.entity';
@@ -20,7 +20,7 @@ export class StockService {
     private readonly stockRepository: Repository<AStock>,
   ) {}
 
-  private async batchSaveData(stocks: any[]) {
+  private async saveData(stocks: any[]) {
     const cloneStocks = [...stocks];
 
     while (cloneStocks.length > 0) {
@@ -34,7 +34,8 @@ export class StockService {
     this.logger.log(`已批量更新 ${stocks.length} 只股票数据`);
   }
 
-  private transformData(stocks: any[]) {
+  private transformData(list: AStock[] | AStock) {
+    const stocks = Array.isArray(list) ? list : [list];
     return stocks.map(item => {
       delete item.id;
       return {
@@ -62,7 +63,7 @@ export class StockService {
       };
     });
 
-    await this.batchSaveData(stocks);
+    await this.saveData(stocks);
 
     return {
       list: this.transformData(stocks),
@@ -73,19 +74,30 @@ export class StockService {
   async getStocks(query: StockQuery) {
     const { page, pageSize } = query;
 
-    const [list, total] = await this.stockRepository.findAndCount({
-      skip: (page - 1) * pageSize,
-      take: pageSize || 100,
+    const where: FindManyOptions<AStock> = {
+      select: [
+        'name',
+        'code',
+        'industry',
+        'listingDate',
+        'isActive',
+        'isSuspended',
+      ],
       order: { code: 'ASC' },
-      select: {
-        name: true,
-        code: true,
-        industry: true,
-        listingDate: true,
-        isActive: true,
-        isSuspended: true,
-      },
-    });
+    };
+
+    if (query.page && query.pageSize) {
+      where.skip = (page - 1) * pageSize;
+      where.take = pageSize;
+    }
+    if (query.sortBy && query.sortOrder) {
+      where.order = { [query.sortBy]: query.sortOrder };
+    }
+    if (query.fields) {
+      where.select = query.fields as FindOptionsSelect<AStock>;
+    }
+
+    const [list, total] = await this.stockRepository.findAndCount(where);
 
     return {
       list: this.transformData(list),
@@ -102,6 +114,8 @@ export class StockService {
       throw new Error(`股票 ${code} 不存在`);
     }
 
-    return this.transformData([stock]);
+    return {
+      data: this.transformData(stock),
+    };
   }
 }

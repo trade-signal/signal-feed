@@ -4,7 +4,6 @@ export interface BaseQuery {
   page?: number;
   pageSize?: number;
   getAll?: boolean;
-  industry?: string;
   sortBy?: string;
   sortOrder?: SortOrder;
   fields?: string[];
@@ -12,6 +11,12 @@ export interface BaseQuery {
 
 export interface StockQuery extends BaseQuery {}
 
-export interface StockQuotesQuery extends BaseQuery {}
+export interface StockQuotesQuery extends BaseQuery {
+  date?: string;
+  industry?: string;
+}
 
-export interface StockScreenerQuery extends BaseQuery {}
+export interface StockScreenerQuery extends BaseQuery {
+  date?: string;
+  industry?: string;
+}

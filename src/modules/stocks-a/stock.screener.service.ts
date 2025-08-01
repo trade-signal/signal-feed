@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsSelect, Repository } from 'typeorm';
 
-import { formatDate, formatDateISO } from 'src/common/utils/date';
+import { formatDate, formatDateISO, toDate } from 'src/common/utils/date';
 import { AStockScreener } from './entities/stock.screener.entity';
 import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.screener.service';
 import type { StockScreenerQuery } from './interfaces/stock.query';
@@ -20,7 +20,7 @@ export class StockScreenerService {
     private readonly stockScreenerRepository: Repository<AStockScreener>,
   ) {}
 
-  private async batchSaveData(stocks: any[]) {
+  private async saveData(stocks: any[]) {
     const cloneStocks = [...stocks];
 
     while (cloneStocks.length > 0) {
@@ -39,7 +39,8 @@ export class StockScreenerService {
     };
   }
 
-  private transformData(stocks: any[]) {
+  private transformData(list: AStockScreener[] | AStockScreener) {
+    const stocks = Array.isArray(list) ? list : [list];
     return stocks.map(item => {
       delete item.id;
       return {
@@ -61,7 +62,7 @@ export class StockScreenerService {
     const { list, total } =
       await this.eastMoneyStockScreenerService.getAllScreenerStocks();
 
-    const { date, stocks } = await this.batchSaveData(list);
+    const { date, stocks } = await this.saveData(list);
 
     return {
       date,
@@ -73,22 +74,45 @@ export class StockScreenerService {
   async getStockScreener(query: StockScreenerQuery) {
     const { page, pageSize } = query;
 
-    const dateRaw = await this.stockScreenerRepository
-      .createQueryBuilder('stockScreener')
-      .select('MAX(date)', 'maxDate')
-      .getRawOne();
+    let date: Date | undefined;
 
-    const [list, total] = await this.stockScreenerRepository.findAndCount({
+    if (query.date) {
+      date = toDate(query.date);
+    } else {
+      const dateRaw = await this.stockScreenerRepository
+        .createQueryBuilder('stockScreener')
+        .select('MAX(date)', 'maxDate')
+        .getRawOne();
+      date = dateRaw.maxDate;
+    }
+
+    const where: FindManyOptions<AStockScreener> = {
+      where: { date },
       order: { code: 'ASC' },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      where: {
-        date: dateRaw.maxDate,
-      },
-    });
+    };
+
+    if (query.page && query.pageSize) {
+      where.skip = (page - 1) * pageSize;
+      where.take = pageSize;
+    }
+    if (query.sortBy && query.sortOrder) {
+      where.order = { [query.sortBy]: query.sortOrder };
+    }
+    if (query.fields) {
+      where.select = query.fields as FindOptionsSelect<AStockScreener>;
+    }
+    if (query.industry) {
+      where.where = {
+        ...where.where,
+        industry: query.industry,
+      };
+    }
+
+    const [list, total] =
+      await this.stockScreenerRepository.findAndCount(where);
 
     return {
-      date: formatDate(dateRaw.maxDate),
+      date: formatDate(date),
       list: this.transformData(list),
       total,
     };
@@ -100,17 +124,17 @@ export class StockScreenerService {
       .select('MAX(date)', 'maxDate')
       .getRawOne();
 
-    const stockScreener = await this.stockScreenerRepository.findOne({
+    const stock = await this.stockScreenerRepository.findOne({
       where: { code, date: dateRaw.maxDate },
     });
 
-    if (!stockScreener) {
+    if (!stock) {
       throw new Error(`股票筛选器 ${code} 不存在`);
     }
 
     return {
       date: formatDate(dateRaw.maxDate),
-      data: this.transformData([stockScreener])[0],
+      data: this.transformData(stock),
     };
   }
 }
