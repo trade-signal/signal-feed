@@ -5,7 +5,7 @@ import { FindManyOptions, FindOptionsSelect, Repository } from 'typeorm';
 import { formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStock } from './entities/stock.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
-import type { StockQuery } from './interfaces/stock.query';
+import type { StockQuery } from './types/stock.query';
 
 @Injectable()
 export class StockService {
@@ -114,8 +114,6 @@ export class StockService {
       throw new Error(`股票 ${code} 不存在`);
     }
 
-    return {
-      data: this.transformData(stock),
-    };
+    return this.transformData(stock);
   }
 }

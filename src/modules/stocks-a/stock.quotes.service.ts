@@ -6,7 +6,7 @@ import { toDate, formatDate, formatDateISO } from 'src/common/utils/date';
 import { AStockQuotes } from './entities/stock.quotes.entity';
 import { EastMoneyStockService } from './providers/eastmoney/stock.service';
 import { StockTradeService } from './stock.trade.service';
-import type { StockQuotesQuery } from './interfaces/stock.query';
+import type { StockQuotesQuery } from './types/stock.query';
 
 @Injectable()
 export class StockQuotesService {
@@ -136,9 +136,6 @@ export class StockQuotesService {
       throw new Error(`股票行情 ${code} 不存在`);
     }
 
-    return {
-      date: formatDate(dateRaw.maxDate),
-      data: this.transformData(stock),
-    };
+    return this.transformData(stock);
   }
 }

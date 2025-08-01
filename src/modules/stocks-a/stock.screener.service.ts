@@ -5,7 +5,7 @@ import { FindManyOptions, FindOptionsSelect, Repository } from 'typeorm';
 import { formatDate, formatDateISO, toDate } from 'src/common/utils/date';
 import { AStockScreener } from './entities/stock.screener.entity';
 import { EastMoneyStockScreenerService } from './providers/eastmoney/stock.screener.service';
-import type { StockScreenerQuery } from './interfaces/stock.query';
+import type { StockScreenerQuery } from './types/stock.query';
 
 @Injectable()
 export class StockScreenerService {
@@ -132,9 +132,6 @@ export class StockScreenerService {
       throw new Error(`股票筛选器 ${code} 不存在`);
     }
 
-    return {
-      date: formatDate(dateRaw.maxDate),
-      data: this.transformData(stock),
-    };
+    return this.transformData(stock);
   }
 }

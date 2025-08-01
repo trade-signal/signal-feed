@@ -9,7 +9,7 @@ import type {
   StockQuery,
   StockQuotesQuery,
   StockScreenerQuery,
-} from './interfaces/stock.query';
+} from './types/stock.query';
 
 @Controller('stocks-a')
 @UseInterceptors(TransformInterceptor)
@@ -49,5 +49,10 @@ export class StocksController {
   @Get('screener')
   async getStockScreener(@Query() query: StockScreenerQuery) {
     return this.stockScreenerService.getStockScreener(query);
+  }
+
+  @Get('screener/:code')
+  async getStockScreenerByCode(@Param('code') code: string) {
+    return this.stockScreenerService.getStockScreenerByCode(code);
   }
 }
