@@ -3,7 +3,6 @@ export type SortOrder = 'asc' | 'desc';
 export interface BaseQuery {
   page?: number;
   pageSize?: number;
-  getAll?: boolean;
   sortBy?: string;
   sortOrder?: SortOrder;
   fields?: string[];
