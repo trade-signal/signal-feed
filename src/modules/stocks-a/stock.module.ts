@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ApiAuthGuard } from 'src/common/guards/api.auth.guard';
 
 import { AStock } from './entities/stock.entity';
 import { AStockQuotes } from './entities/stock.quotes.entity';
@@ -22,6 +23,7 @@ import { StockScreenerService } from './stock.screener.service';
   ],
   controllers: [StocksController],
   providers: [
+    ApiAuthGuard,
     EastMoneyStockService,
     EastMoneyStockScreenerService,
     SinaTradeService,

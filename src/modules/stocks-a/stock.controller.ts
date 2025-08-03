@@ -1,5 +1,13 @@
-import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseInterceptors,
+  UseGuards,
+} from '@nestjs/common';
 import { TransformInterceptor } from 'src/common/interceptors/transform.interceptors';
+import { ApiAuthGuard } from 'src/common/guards/api.auth.guard';
 
 import { StockTradeService } from './stock.trade.service';
 import { StockService } from './stock.service';
@@ -13,6 +21,7 @@ import type {
 
 @Controller('stocks-a')
 @UseInterceptors(TransformInterceptor)
+@UseGuards(ApiAuthGuard)
 export class StocksController {
   constructor(
     private readonly stockTradeService: StockTradeService,
@@ -26,32 +35,32 @@ export class StocksController {
     return this.stockTradeService.getTradeDates();
   }
 
-  @Get('stocks')
+  @Get('stocks/list')
   async getStocks(@Query() query: StockQuery) {
     return this.stockService.getStocks(query);
   }
 
-  @Get('stocks/:code')
+  @Get('stocks/:code/detail')
   async getStock(@Param('code') code: string) {
     return this.stockService.getStockByCode(code);
   }
 
-  @Get('quotes')
+  @Get('quotes/list')
   async getStockQuotes(@Query() query: StockQuotesQuery) {
     return this.stockQuotesService.getStockQuotes(query);
   }
 
-  @Get('quotes/:code')
+  @Get('quotes/:code/detail')
   async getStockQuotesByCode(@Param('code') code: string) {
     return this.stockQuotesService.getStockQuotesByCode(code);
   }
 
-  @Get('screener')
+  @Get('screener/list')
   async getStockScreener(@Query() query: StockScreenerQuery) {
     return this.stockScreenerService.getStockScreener(query);
   }
 
-  @Get('screener/:code')
+  @Get('screener/:code/detail')
   async getStockScreenerByCode(@Param('code') code: string) {
     return this.stockScreenerService.getStockScreenerByCode(code);
   }
