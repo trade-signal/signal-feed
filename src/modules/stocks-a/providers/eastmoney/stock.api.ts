@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
+import { get } from 'src/common/utils/request';
 
 @Injectable()
 export class StockApi {
@@ -10,11 +10,7 @@ export class StockApi {
     url: string,
     params: Record<string, any>,
   ): Promise<any> {
-    const { data: response } = await firstValueFrom(
-      this.httpService.get(url, {
-        params,
-      }),
-    );
+    const response = await get(this.httpService)(url, params);
 
     if (response.data) return response.data;
     if (response.result) return response.result;

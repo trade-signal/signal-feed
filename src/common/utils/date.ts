@@ -104,3 +104,6 @@ export const formatDateDiff = (value: string | Date) => {
 export const getCurrentYear = () => dayjs().year();
 export const getCurrentMonth = () => dayjs().month() + 1;
 export const getCurrentDay = () => dayjs().date();
+
+export const isBefore24Hours = (date: string | Date) =>
+  dayjs().isBefore(dayjs(date).subtract(24, 'hours'));
