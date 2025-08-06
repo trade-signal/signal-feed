@@ -4,5 +4,7 @@ import { NewsQuery } from '../types/news.query';
 export interface NewsProvider {
   saveData(data: any, ...args: any[]): Promise<News[]>;
   transformData(data: any, ...args: any[]): News[];
-  getNews(query: NewsQuery): Promise<News[]>;
+  checkExist(): Promise<boolean>;
+  fetchAll(): Promise<News[]>;
+  getNews(query: NewsQuery): Promise<{ list: News[]; total: number }>;
 }
