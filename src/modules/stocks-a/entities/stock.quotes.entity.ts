@@ -7,7 +7,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'a_stock_quotes',
+  comment: 'A股股票行情数据表',
+})
 @Index(['code', 'date'], { unique: true })
 @Index(['date'])
 @Index(['code'])

@@ -106,4 +106,4 @@ export const getCurrentMonth = () => dayjs().month() + 1;
 export const getCurrentDay = () => dayjs().date();
 
 export const isBefore24Hours = (date: string | Date) =>
-  dayjs().isBefore(dayjs(date).subtract(24, 'hours'));
+  dayjs(date).isBefore(dayjs().subtract(24, 'hours'));

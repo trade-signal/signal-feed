@@ -10,25 +10,6 @@ export class FutunnService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  private readonly cnCodes = ['sz', 'sh', 'bj'];
-
-  private isCn(code: string) {
-    return this.cnCodes.some(key => code.endsWith(key));
-  }
-
-  private formatCode(code: string) {
-    const isCn = this.isCn(code.toLocaleLowerCase());
-
-    return {
-      code: code
-        .split('.')
-        .reverse()
-        .join(isCn ? '' : '_')
-        .toLocaleLowerCase(),
-      isCn,
-    };
-  }
-
   private async request(seqMark: string) {
     try {
       const url = `https://news.futunn.com/news-site-api/main/get-flash-list`;
@@ -37,10 +18,11 @@ export class FutunnService {
 
       if (seqMark) baseParams.seqMark = seqMark;
 
-      const response = await get(this.httpService)(url, {
-        ...baseParams,
-        _t: getCurrentUnixTime(),
-      });
+      const response = await get(this.httpService)(
+        url,
+        { ...baseParams, _t: getCurrentUnixTime() },
+        { 'x-news-site-lang': 0 },
+      );
 
       if (response.code !== 0) {
         throw new Error(`获取富途牛牛新闻失败: ${response.msg}`);

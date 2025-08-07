@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
 
-import { BaiduService } from './providers/baidu/baidu.service';
-
 import { News } from './entities/news.entity';
 import { NewsProvider } from './interfaces/news.interface';
 import { NewsQuery } from './types/news.query';
 import { BaiduNews } from './providers/baidu/baidu.types';
+import { BaiduService } from './providers/baidu/baidu.service';
 
 @Injectable()
 export class NewsBaiduService implements NewsProvider {
@@ -73,7 +72,9 @@ export class NewsBaiduService implements NewsProvider {
   }
 
   async checkExist(): Promise<boolean> {
-    const total = await this.newsRepository.count();
+    const total = await this.newsRepository.count({
+      where: { source: 'baidu' },
+    });
     return total > 0;
   }
 

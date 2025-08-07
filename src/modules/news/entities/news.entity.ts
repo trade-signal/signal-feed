@@ -1,5 +1,11 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, PrimaryGeneratedColumn, Entity, Index } from 'typeorm';
 
+@Entity({
+  name: 'news',
+  comment: '新闻数据表',
+})
+@Index(['source', 'sourceId'], { unique: true })
+@Index(['date'])
 export class News {
   @PrimaryGeneratedColumn({
     type: 'int',
