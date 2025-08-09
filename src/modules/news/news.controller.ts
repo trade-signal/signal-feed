@@ -1,10 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 
 import { NewsSinaService } from './news.sina.service';
 import { NewsFutunnService } from './news.futunn.service';
 import { NewsClsService } from './news.cls.service';
 import { NewsBaiduService } from './news.baidu.service';
-import { NewsQuery } from './types/news.query';
+import { NewsQuery, NewsSource, NewsListQuery } from './types/news.query';
 
 @Controller('news')
 export class NewsController {
@@ -14,6 +14,26 @@ export class NewsController {
     private readonly newsClsService: NewsClsService,
     private readonly newsBaiduService: NewsBaiduService,
   ) {}
+
+  @Get('list')
+  async getNews(@Query() query: NewsListQuery) {
+    if (!query.source) {
+      query.source = NewsSource.Sina;
+    }
+
+    switch (query.source) {
+      case NewsSource.Sina:
+        return this.newsSinaService.getNews(query);
+      case NewsSource.Futunn:
+        return this.newsFutunnService.getNews(query);
+      case NewsSource.Cls:
+        return this.newsClsService.getNews(query);
+      case NewsSource.Baidu:
+        return this.newsBaiduService.getNews(query);
+      default:
+        throw new BadRequestException('不支持该来源');
+    }
+  }
 
   @Get('sina/list')
   async getSinaNews(@Query() query: NewsQuery) {

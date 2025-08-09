@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import dayjs from 'dayjs';
 import { getCurrentUnixTime, isBefore24Hours } from 'src/common/utils/date';
 import { get } from 'src/common/utils/request';
+import { md5Encrypt, sha1Encrypt } from 'src/common/utils/encrypt';
 
 @Injectable()
 export class ClsService {
@@ -19,6 +20,14 @@ export class ClsService {
 
   constructor(private readonly httpService: HttpService) {}
 
+  private generateSign = (params: Record<string, any>) => {
+    const str = Object.keys(params)
+      .sort()
+      .map(key => `${key}=${params[key]}`)
+      .join('&');
+    return md5Encrypt(sha1Encrypt(str));
+  };
+
   private async request(category: string, lastTime: number) {
     try {
       const url = `https://www.cls.cn/v1/roll/get_roll_list`;
@@ -33,7 +42,10 @@ export class ClsService {
         sv: '8.4.6',
       };
 
-      const response = await get(this.httpService)(url, baseParams);
+      const response = await get(this.httpService)(url, {
+        ...baseParams,
+        sign: this.generateSign(baseParams),
+      });
 
       if (response.errno != 0) {
         throw new Error(`获取24小时电报失败: ${response.msg}`);
@@ -46,39 +58,44 @@ export class ClsService {
   }
 
   async getNews() {
-    const results: any[] = [];
+    try {
+      const results: any[] = [];
 
-    for (const category of ClsService.CLS_CATEGORIES) {
-      let lastTime = getCurrentUnixTime();
-      let page = 1;
+      for (const category of ClsService.CLS_CATEGORIES) {
+        let lastTime = getCurrentUnixTime();
+        let page = 1;
 
-      while (true) {
-        try {
-          const data = await this.request(category, lastTime);
+        while (true) {
+          try {
+            const data = await this.request(category, lastTime);
 
-          if (!data || !Array.isArray(data) || data.length === 0) {
-            throw new Error(`${category} 分类数据获取失败: 数据为空`);
+            if (!data || !Array.isArray(data) || data.length === 0) {
+              throw new Error(`${category} 分类数据获取失败: 数据为空`);
+            }
+
+            results.push(...data);
+
+            lastTime = data[data.length - 1].ctime;
+
+            const time = dayjs(lastTime * 1e3).toDate();
+
+            // 如果时间超过24小时前，或者页码大于30，则停止
+            if (isBefore24Hours(time) || page >= 30) break;
+
+            page++;
+          } catch (error) {
+            this.logger.error(`${category} 分类数据获取失败: ${error}`);
+            break;
           }
-
-          results.push(...data);
-
-          lastTime = data[data.length - 1].ctime;
-
-          const time = dayjs(lastTime * 1e3).toDate();
-
-          // 如果时间超过24小时前，或者页码大于30，则停止
-          if (isBefore24Hours(time) || page >= 30) break;
-
-          page++;
-        } catch (error) {
-          this.logger.error(`${category} 分类数据获取失败: ${error}`);
-          break;
         }
       }
+
+      this.logger.log(`获取财联社新闻成功，共${results.length}条`);
+
+      return results;
+    } catch (error) {
+      this.logger.error(`获取财联社新闻失败: ${error}`);
+      return [];
     }
-
-    this.logger.log(`获取财联社新闻成功，共${results.length}条`);
-
-    return results;
   }
 }

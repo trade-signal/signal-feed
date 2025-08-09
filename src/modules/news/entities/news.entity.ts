@@ -1,11 +1,18 @@
-import { Column, PrimaryGeneratedColumn, Entity, Index } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({
   name: 'news',
   comment: '新闻数据表',
 })
 @Index(['source', 'sourceId'], { unique: true })
-@Index(['date'])
+@Index(['source', 'publishDate', 'sourceId'])
 export class News {
   @PrimaryGeneratedColumn({
     type: 'int',
@@ -50,10 +57,10 @@ export class News {
   content: string;
 
   @Column({
-    type: 'date',
+    type: 'timestamptz',
     comment: '发布时间',
   })
-  date: Date;
+  publishDate: Date;
 
   @Column({
     type: 'json',
@@ -72,8 +79,20 @@ export class News {
   }[];
 
   @Column({
-    type: 'varchar',
+    type: 'json',
     comment: '分类数组',
   })
   categories: string[];
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    comment: '创建时间',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    comment: '更新时间',
+  })
+  updatedAt: Date;
 }

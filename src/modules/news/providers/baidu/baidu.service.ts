@@ -37,7 +37,7 @@ export class BaiduService {
   }
 
   async getNews() {
-    let page = 1;
+    let page = 0;
 
     const results: any[] = [];
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { formatDateE } from 'src/common/utils/date';
 
 import { News } from './entities/news.entity';
 import { NewsProvider } from './interfaces/news.interface';
@@ -19,8 +20,21 @@ export class NewsClsService implements NewsProvider {
     private readonly newsRepository: Repository<News>,
   ) {}
 
+  uniqueData(data: News[]): News[] {
+    const seen = new Set<string>();
+    const uniqueData: News[] = [];
+    for (const item of data) {
+      const key = `${item.source}:${item.sourceId}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueData.push(item);
+      }
+    }
+    return uniqueData;
+  }
+
   async saveData(data: News[]): Promise<News[]> {
-    const cloneData = [...data];
+    const cloneData = this.uniqueData(data);
 
     while (cloneData.length > 0) {
       const batch = cloneData.splice(0, this.BATCH_SIZE);
@@ -30,7 +44,7 @@ export class NewsClsService implements NewsProvider {
       });
     }
 
-    return data;
+    return cloneData;
   }
 
   transformData(data: ClsNews[], category: string): any[] {
@@ -53,7 +67,7 @@ export class NewsClsService implements NewsProvider {
         title: title,
         summary: brief,
         content: content,
-        date: new Date(ctime * 1e3),
+        publishDate: new Date(ctime * 1e3),
         // hack: use subject_name as tags
         tags: subjects?.map(item => item.subject_name) || [],
         categories: [category],
@@ -80,16 +94,17 @@ export class NewsClsService implements NewsProvider {
 
     const results = this.transformData(list, 'cls');
 
-    await this.saveData(results);
+    const uniqueResults = await this.saveData(results);
 
-    return results;
+    return uniqueResults;
   }
 
-  async getNews(query: NewsQuery): Promise<{ list: News[]; total: number }> {
+  async getNews(query: NewsQuery): Promise<{ list: any[]; total: number }> {
     const { page, pageSize } = query;
 
     const where: FindManyOptions<News> = {
       where: { source: 'cls' },
+      order: { publishDate: 'DESC', sourceId: 'DESC' },
     };
 
     if (page && pageSize) {
@@ -100,7 +115,10 @@ export class NewsClsService implements NewsProvider {
     const [list, total] = await this.newsRepository.findAndCount(where);
 
     return {
-      list,
+      list: list.map(item => ({
+        ...item,
+        publishDate: formatDateE(item.publishDate),
+      })),
       total,
     };
   }

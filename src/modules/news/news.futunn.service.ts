@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FindManyOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { formatDateE } from 'src/common/utils/date';
 
 import { News } from './entities/news.entity';
 import { NewsProvider } from './interfaces/news.interface';
@@ -63,7 +64,7 @@ export class NewsFutunnService implements NewsProvider {
         title,
         summary: '',
         content,
-        date: new Date(Number(time) * 1e3),
+        publishDate: new Date(Number(time) * 1e3),
         tags: [],
         categories: [],
         stocks: quote.map(item => {
@@ -98,11 +99,12 @@ export class NewsFutunnService implements NewsProvider {
     return results;
   }
 
-  async getNews(query: NewsQuery): Promise<{ list: News[]; total: number }> {
+  async getNews(query: NewsQuery): Promise<{ list: any[]; total: number }> {
     const { page, pageSize } = query;
 
     const where: FindManyOptions<News> = {
       where: { source: 'futunn' },
+      order: { publishDate: 'DESC', sourceId: 'DESC' },
     };
 
     if (page && pageSize) {
@@ -113,7 +115,10 @@ export class NewsFutunnService implements NewsProvider {
     const [list, total] = await this.newsRepository.findAndCount(where);
 
     return {
-      list,
+      list: list.map(item => ({
+        ...item,
+        publishDate: formatDateE(item.publishDate),
+      })),
       total,
     };
   }

@@ -49,10 +49,10 @@ export class DataInitService implements OnModuleInit {
     await this.newsSinaInitialization();
     // 富途牛牛新闻数据初始化
     await this.newsFutunnInitialization();
-    // // 同花顺财经新闻数据初始化
-    // await this.newsClsInitialization();
-    // // 百度股市通新闻数据初始化
-    // await this.newsBaiduInitialization();
+    // 财联社财经新闻数据初始化
+    await this.newsClsInitialization();
+    // 百度股市通新闻数据初始化
+    await this.newsBaiduInitialization();
   }
 
   private async stockInitialization() {
@@ -128,14 +128,14 @@ export class DataInitService implements OnModuleInit {
   private async newsClsInitialization() {
     const dataExist = await this.newsClsService.checkExist();
     if (dataExist) {
-      this.logger.log('同花顺财经新闻数据已存在，跳过初始化');
+      this.logger.log('财联社财经新闻数据已存在，跳过初始化');
       return;
     }
 
     try {
       await this.newsClsService.fetchAll();
     } catch (error) {
-      this.logger.error(`同花顺财经新闻数据初始化失败: ${error.message}`);
+      this.logger.error(`财联社财经新闻数据初始化失败: ${error.message}`);
     }
   }
 

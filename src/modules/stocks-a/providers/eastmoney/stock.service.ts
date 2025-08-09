@@ -46,8 +46,6 @@ export class EastMoneyStockService extends StockApi {
 
     const stocks = transformStockData(diff, indicator);
 
-    this.logger.log(`获取股票列表成功，共${stocks.length}条`);
-
     return {
       list: stocks,
       total,
@@ -60,6 +58,8 @@ export class EastMoneyStockService extends StockApi {
     const pageSize = 100;
 
     const stocks: any[] = [];
+
+    this.logger.log(`开始获取所有股票`);
 
     while (true) {
       const { list, total } = await this.getStocks(page, pageSize);
@@ -74,6 +74,8 @@ export class EastMoneyStockService extends StockApi {
 
       if (stocks.length >= total) break;
     }
+
+    this.logger.log(`获取所有股票成功，共${stocks.length}条`);
 
     return {
       list: stocks,
@@ -109,8 +111,6 @@ export class EastMoneyStockService extends StockApi {
 
     const stocks = transformStockData(diff, indicator);
 
-    this.logger.log(`获取股票列表成功，共${stocks.length}条`);
-
     return {
       list: stocks,
       total,
@@ -123,6 +123,8 @@ export class EastMoneyStockService extends StockApi {
     const pageSize = 100;
 
     const stocks: any[] = [];
+
+    this.logger.log(`开始获取所有股票行情`);
 
     while (true) {
       const { list, total } = await this.getStockQuotes(page, pageSize);
@@ -137,6 +139,8 @@ export class EastMoneyStockService extends StockApi {
 
       if (stocks.length >= total) break;
     }
+
+    this.logger.log(`获取所有股票行情成功，共${stocks.length}条`);
 
     return {
       list: stocks,

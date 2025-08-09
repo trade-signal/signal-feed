@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
+import { md5Hash } from 'src/common/utils/encrypt';
+import { formatDateE } from 'src/common/utils/date';
 
 import { News } from './entities/news.entity';
 import { NewsProvider } from './interfaces/news.interface';
@@ -45,15 +47,16 @@ export class NewsBaiduService implements NewsProvider {
       } = item;
 
       const tags = tag.split('$').map(item => item.trim());
+      const contentText = content.items[0].data;
 
       return {
         source: 'baidu',
-        sourceId: publish_time.toString(),
+        sourceId: publish_time + '|' + md5Hash(contentText),
         sourceUrl: third_url,
-        title,
+        title: title || '',
         summary: '',
-        content: content.items[0].data,
-        date: new Date(publish_time * 1e3),
+        content: contentText,
+        publishDate: new Date(Number(publish_time) * 1e3),
         tags,
         categories: tags,
         stocks: entity?.map(item => {
@@ -88,11 +91,12 @@ export class NewsBaiduService implements NewsProvider {
     return results;
   }
 
-  async getNews(query: NewsQuery): Promise<{ list: News[]; total: number }> {
+  async getNews(query: NewsQuery): Promise<{ list: any[]; total: number }> {
     const { page, pageSize } = query;
 
     const where: FindManyOptions<News> = {
       where: { source: 'baidu' },
+      order: { publishDate: 'DESC', sourceId: 'DESC' },
     };
 
     if (page && pageSize) {
@@ -103,7 +107,10 @@ export class NewsBaiduService implements NewsProvider {
     const [list, total] = await this.newsRepository.findAndCount(where);
 
     return {
-      list,
+      list: list.map(item => ({
+        ...item,
+        publishDate: formatDateE(item.publishDate),
+      })),
       total,
     };
   }
