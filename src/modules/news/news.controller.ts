@@ -1,4 +1,13 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiAuthGuard } from 'src/common/guards/api.auth.guard';
+import { TransformInterceptor } from 'src/common/interceptors/transform.interceptors';
 
 import { NewsSinaService } from './news.sina.service';
 import { NewsFutunnService } from './news.futunn.service';
@@ -7,6 +16,8 @@ import { NewsBaiduService } from './news.baidu.service';
 import { NewsQuery, NewsSource, NewsListQuery } from './types/news.query';
 
 @Controller('news')
+@UseInterceptors(TransformInterceptor)
+@UseGuards(ApiAuthGuard)
 export class NewsController {
   constructor(
     private readonly newsSinaService: NewsSinaService,

@@ -83,7 +83,7 @@ export class StockQuotesService {
   }
 
   async getStockQuotes(query: StockQuotesQuery) {
-    const { page, pageSize } = query;
+    const { page = 1, pageSize = 20 } = query;
 
     let date: Date | undefined;
 
@@ -103,8 +103,8 @@ export class StockQuotesService {
     };
 
     if (query.page && query.pageSize) {
-      where.skip = (page - 1) * pageSize;
-      where.take = pageSize;
+      where.skip = (Number(page) - 1) * Number(pageSize);
+      where.take = Number(pageSize);
     }
     if (query.sortBy && query.sortOrder) {
       where.order = { [query.sortBy]: query.sortOrder };
@@ -119,6 +119,8 @@ export class StockQuotesService {
       date: formatDate(date),
       list: this.transformData(list),
       total,
+      page: Number(page),
+      pageSize: Number(pageSize),
     };
   }
 

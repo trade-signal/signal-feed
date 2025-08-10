@@ -91,8 +91,13 @@ export class NewsBaiduService implements NewsProvider {
     return results;
   }
 
-  async getNews(query: NewsQuery): Promise<{ list: any[]; total: number }> {
-    const { page, pageSize } = query;
+  async getNews(query: NewsQuery): Promise<{
+    list: any[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> {
+    const { page = 1, pageSize = 20 } = query;
 
     const where: FindManyOptions<News> = {
       where: { source: 'baidu' },
@@ -112,6 +117,8 @@ export class NewsBaiduService implements NewsProvider {
         publishDate: formatDateE(item.publishDate),
       })),
       total,
+      page,
+      pageSize,
     };
   }
 }

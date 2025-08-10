@@ -11,7 +11,7 @@ import { Response as ExpressResponse } from 'express';
 export interface Response<T> {
   data: T;
   success: boolean;
-  msg?: string;
+  message?: string;
 }
 
 @Injectable()
@@ -38,14 +38,14 @@ export class TransformInterceptor<T>
           return Promise.resolve({
             success: false,
             data: null,
-            msg: error.message,
+            message: error.message,
           });
         }
 
         return throwError(() => ({
           success: false,
           data: null,
-          msg: '服务器内部错误',
+          message: '服务器内部错误',
         }));
       }),
     );

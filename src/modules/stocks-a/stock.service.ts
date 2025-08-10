@@ -72,7 +72,7 @@ export class StockService {
   }
 
   async getStocks(query: StockQuery) {
-    const { page, pageSize } = query;
+    const { page = 1, pageSize = 20 } = query;
 
     const where: FindManyOptions<AStock> = {
       select: [
@@ -87,8 +87,8 @@ export class StockService {
     };
 
     if (query.page && query.pageSize) {
-      where.skip = (page - 1) * pageSize;
-      where.take = pageSize;
+      where.skip = (Number(page) - 1) * Number(pageSize);
+      where.take = Number(pageSize);
     }
     if (query.sortBy && query.sortOrder) {
       where.order = { [query.sortBy]: query.sortOrder };
@@ -102,6 +102,8 @@ export class StockService {
     return {
       list: this.transformData(list),
       total,
+      page: Number(page),
+      pageSize: Number(pageSize),
     };
   }
 
